@@ -1,0 +1,185 @@
+grammar Verilog
+    rule verilog
+        vlmodule+ {
+            def modules
+                return elements
+            end
+        }
+    end
+
+    rule vlmodule
+        'module' ws name ws param:parameters? ws ';' ws co:content ws 'endmodule' {
+            def parameters
+                return param.value()
+            end
+
+            def content
+                return co
+            end
+
+            def to_s
+                return "{Module #{name}\nParameters: #{parameters.count}}"
+            end
+
+            def module_name
+                name.text_value
+            end
+        }
+    end
+
+    rule name
+        [a-zA-Z] [a-zA-Z0-9_"-"]*
+    end
+
+    rule type
+        name
+    end
+
+    rule parameters
+        '(' ws first_parameter:parameter ws rest_parameters:(',' ws param:parameter)* ws ')' {
+            def value
+                [first_parameter] + rest_parameters.elements.map do |field|
+                    field.param
+                end
+            end
+        }
+    end
+
+    rule parameter
+        ty:type ws si:size? ws na:name { 
+            def type
+                return ty.text_value
+            end
+
+            def array?
+                return si.text_value != ""
+            end
+
+            def size
+                return si.text_value
+            end
+
+            def name
+                return na.text_value
+            end
+        }
+    end
+
+    rule size
+        '[' ws [0-9]+ ws ':' ws [0-9]+ ws ']'
+    end
+
+    rule index
+        '[' ws [0-9]+ ws ']'
+    end
+
+    rule content
+        first_state:statement rest:(ws state:statement)* {
+            def statements
+                [first_state] + rest.elements.map do |f|
+                    f.state
+                end
+            end
+        }
+    end
+
+    rule statement
+        ty:type ws na:name ws args:arguments ws ';' {
+            def statement_kind
+                return :instantiation
+            end
+
+            def type
+                return ty.text_value
+            end
+
+            def name
+                return na.text_value
+            end
+
+            def arguments
+                return args.args()
+            end
+        }
+        /
+        ty:type ws na:name ws si:size? ws ';' {
+            def statement_kind
+                return :declaration
+            end
+
+            def type
+                return ty.text_value
+            end
+
+            def array?
+                return si != ""
+            end
+
+            def size
+                return si.text_value
+            end
+
+            def name
+                return na.text_value
+            end
+        }
+        /
+        ex:expr ws ';' {
+            def statement_kind
+                return :expr
+            end
+
+            def expr
+                return ex
+            end
+        }
+    end
+
+    rule arguments
+        '(' ws first:expr ws rest:(',' ws ex:expr)* ws ')' {
+            def args
+                [first] + rest.elements.map do |f|
+                    f.ex
+                end
+            end
+        }
+    end
+
+    rule expr
+        name ws idx:index? {
+            def is_number?
+                false
+            end
+
+            def variable_name
+                return name.text_value
+            end
+
+            def index
+                if (idx.text_value == "")
+                    return nil
+                else
+                    return idx.text_value.slice(1,idx.text_value.length - 2).to_i
+                end
+            end
+        }
+        /
+        '-'? [0-9]* "'" [bBhHdDoO] [0-9a-fA-F]+ {
+            def is_number?
+                true
+            end
+            
+            def content
+                self.text_value
+            end
+        }
+    end
+
+    rule ws
+        (" " / "\n" / "\t")*
+    end
+
+    rule comment
+        "//" [a-zA-Z _0-9]*
+    end
+end
