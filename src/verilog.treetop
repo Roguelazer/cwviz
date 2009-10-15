@@ -8,7 +8,7 @@ grammar Verilog
     end
 
     rule vlmodule
-        'module' ws name ws param:parameters? ws ';' ws co:content ws 'endmodule' {
+        'module' ws na:name ws param:parameters? ws ';' ws co:content ws 'endmodule' {
             def parameters
                 return param.value()
             end
@@ -22,7 +22,7 @@ grammar Verilog
             end
 
             def module_name
-                name.text_value
+                na.text_value
             end
         }
     end
@@ -100,6 +100,30 @@ grammar Verilog
             def arguments
                 return args.args()
             end
+
+            def compute_coords
+                @coords = []
+                if (na.text_value =~ /.*_(\d+)_(\d+)/)
+                    @coords[0] = $1.to_i
+                    @coords[1] = $2.to_i
+                else
+                    @coords = [0,0]
+                end
+            end
+
+            def x
+                if @coords.nil?
+                    compute_coords()
+                end
+                return @coords[0]
+            end
+
+            def y
+                if @coords.nil?
+                    compute_coords()
+                end
+                return @coords[1]
+            end
         }
         /
         ty:type ws na:name ws si:size? ws ';' {
@@ -136,7 +160,7 @@ grammar Verilog
     end
 
     rule arguments
-        '(' ws first:expr ws rest:(',' ws ex:expr)* ws ')' {
+        '(' ws first:expr ws rest:(',' ws ex:expr ws)* ws ')' {
             def args
                 [first] + rest.elements.map do |f|
                     f.ex

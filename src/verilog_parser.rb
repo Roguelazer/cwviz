@@ -30,7 +30,8 @@ class VlParser
     # Parse a string.
     # Returns the parsed syntax tree
     def parse(str)
-        res = @parser.parse(VerilogLexer.LexString(str))
+        lexed = VerilogLexer.LexString(str)
+        res = @parser.parse(lexed)
         return res
     end
 
@@ -44,5 +45,10 @@ class VlParser
             f.readlines().join("\n")
         }
         parse(str)
+    end
+
+    # Get the reason for a failure
+    def failure_reason
+        @parser.failure_reason
     end
 end

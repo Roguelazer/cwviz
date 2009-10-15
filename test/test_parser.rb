@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with CWVIZ.  If not, see <http://www.gnu.org/licenses/>.
 
-# This script tests the Verilog parser
+# This script tests the Verilog parser and lexer
 
 require "treetop"
 require "verilog.rb"
@@ -31,6 +31,10 @@ class TestParser < Test::Unit::TestCase
         @comment_str = File.open(File.join($DATA_BASE, "comment_test.v"), "r") { |f|
             f.readlines().join("\n")
         }
+    end
+
+    def name
+        "Parser and Lexer Test Suite"
     end
 
     def test_lex()
@@ -51,7 +55,7 @@ class TestParser < Test::Unit::TestCase
         res = parser.parse(@simple_str)
         assert_equal(1, res.modules.count, "There's only one module in this file")
         mod = res.modules[0]
-        assert_equal("Hello", mod.module_name.to_s)
+        assert_equal("Hello", mod.module_name)
         assert_equal(2, mod.parameters.count)
         assert_equal("input", mod.parameters[0].type)
         assert_equal("output", mod.parameters[1].type)
@@ -75,4 +79,35 @@ class TestParser < Test::Unit::TestCase
         assert_equal(2, statement.arguments[1].index)
     end
 
+    def test_complicated()
+        parser = VlParser.new()
+        res = parser.parse_file(File.join($DATA_BASE, "mult_arrayFlat_16_16.v"))
+        assert_not_nil(res, "Failure reason: #{parser.failure_reason()}")
+        assert_equal(1, res.modules.count)
+        assert_equal("multiplier", res.modules[0].module_name)
+        assert_equal(3, res.modules[0].parameters.count)
+        assert_equal(33, res.modules[0].content.statements.select { |s|
+            s.type == "wire"
+        }.count)
+        assert_equal(16, res.modules[0].content.statements.select { |s|
+            s.type == "fullAdd"
+        }.count)
+        assert_equal(256, res.modules[0].content.statements.select { |s|
+            s.type == "CSA"
+        }.count)
+    end
+
+    def test_coords()
+        parser = VlParser.new()
+        res = parser.parse_file(File.join($DATA_BASE, "coords.v"))
+        assert_equal(2, res.modules[0].content.statements.count)
+        csa0 = res.modules[0].content.statements[0]
+        csa1 = res.modules[0].content.statements[1]
+        assert_equal(:instantiation, csa0.statement_kind)
+        assert_equal(:instantiation, csa1.statement_kind)
+        assert_equal(10, csa0.x)
+        assert_equal(0, csa0.y)
+        assert_equal(0, csa1.x)
+        assert_equal(10, csa1.y)
+    end
 end
