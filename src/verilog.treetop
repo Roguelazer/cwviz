@@ -8,13 +8,17 @@ grammar Verilog
     end
 
     rule vlmodule
-        'module' ws na:name ws param:parameters? ws ';' ws co:content ws 'endmodule' {
+        'module' ws na:name ws param:parameters? ws ';' ws co:content ws 'endmodule' ws {
             def parameters
                 return param.value()
             end
 
             def content
                 return co
+            end
+
+            def statements
+                return co.statements
             end
 
             def to_s

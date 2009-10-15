@@ -24,7 +24,14 @@ require "test/unit"
 $:.push(File.join(File.dirname(__FILE__), "..", "src"))
 $DATA_BASE=File.join(File.dirname(__FILE__), "data")
 
-# Require all of the test_*'s
-Dir.glob("test_*.rb") { |f|
-    require f
-}
+
+if (ARGV.nil?)
+    # Require all of the test_*'s
+    Dir.glob("test_*.rb") { |f|
+        require f
+    }
+else
+    ARGV.each { |arg|
+        require "test_#{arg}.rb"
+    }
+end

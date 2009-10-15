@@ -16,26 +16,68 @@
 # You should have received a copy of the GNU General Public License
 # along with CWVIZ.  If not, see <http://www.gnu.org/licenses/>.
 
+require "circuit_element.rb"
+require "verilog_parser.rb"
+
 # This class represents a complete circuit
 class Circuit
+    # The circuit name
+    attr_reader :name
+
     # Elements is a list of circuit elements
     @elements
 
     # Constructor
-    def init
+    def initialize
         @elements = Array.new()
+        @name = ""
+        @bounding_box = nil
+    end
+
+    # Get the number of circuit elements
+    def num_elements
+        return @elements.count
+    end
+
+    # The bounding box of this circuit. One end is always
+    # (0,0).
+    #
+    # Returns a Hash containing values for "x" and "y"
+    def bounding_box
+        if @bounding_box.nil?
+            compute_extents
+        end
+        return @bounding_box
+    end
+
+    # Compute the extents of the bounding box of the circuit
+    def compute_extents
+        max_x = 0
+        max_y = 0
+        @elements.each { |e|
+            if (e.x > max_x)
+                max_x = e.x
+            end
+            if (e.y > max_y)
+                max_y = e.y
+            end
+        }
+        @bounding_box = {"x" => max_x, "y" => max_y }
     end
 
     # Create a new Circuit object from a Verilog file
     #
     # Arguments:
     # file_path:: A string containing the path to the file
+    # root_module:: The name of the root module to visualize. If nil, will
+    #   visualize whatever module is defined first.
     #
     # Returns:
     # A new, initialized circuit
-    def self.init_from_verilog(file_path)
+    def self.new_from_verilog(file_path, root_module=nil)
         c = Circuit.new()
-        c.load_verilog_file(file_path)
+        c.load_verilog_file(file_path, root_module)
+        return c
     end
 
     # Load a file into the current Circuit
@@ -45,10 +87,24 @@ class Circuit
     # root_mod:: The name of the root module to visualize. If nil, will
     #   visualize whatever module is defined first.
     def load_verilog_file(file_path, root_mod=nil)
-        File.open(file_path, "r") do |f|
-            f.lines.each do |l|
-
-            end
+        parser = VlParser.new()
+        ast = parser.parse_file(file_path)
+        if (ast.nil?)
+            raise RuntimeError.new("Could not parse file at #{file_path}; error was #{parser.failure_reason()}")
         end
+        mod = ast.modules[0]
+        if (!root_mod.nil?)
+            mod = ast.modules.find { |m| 
+                m.module_name == root_mod
+            }
+        end
+        @name = mod.module_name
+        mod.statements.each { |statement|
+            if (statement.statement_kind == :instantiation)
+                @elements.push(CircuitElement.new(statement.type, statement.x, statement.y))
+            end
+        }
     end
+
+    private :compute_extents
 end

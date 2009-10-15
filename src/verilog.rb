@@ -49,7 +49,7 @@ module Verilog
       elements[1]
     end
 
-    def name
+    def na
       elements[2]
     end
 
@@ -77,6 +77,9 @@ module Verilog
       elements[9]
     end
 
+    def ws6
+      elements[11]
+    end
   end
 
   module Vlmodule1
@@ -88,12 +91,16 @@ module Verilog
         return co
     end
 
+    def statements
+        return co.statements
+    end
+
     def to_s
         return "{Module #{name}\nParameters: #{parameters.count}}"
     end
 
     def module_name
-        name.text_value
+        na.text_value
     end
   end
 
@@ -161,6 +168,10 @@ module Verilog
                           r12 = nil
                         end
                         s0 << r12
+                        if r12
+                          r13 = _nt_ws
+                          s0 << r13
+                        end
                       end
                     end
                   end
@@ -806,6 +817,30 @@ module Verilog
     def arguments
         return args.args()
     end
+
+    def compute_coords
+        @coords = []
+        if (na.text_value =~ /.*_(\d+)_(\d+)/)
+            @coords[0] = $1.to_i
+            @coords[1] = $2.to_i
+        else
+            @coords = [0,0]
+        end
+    end
+
+    def x
+        if @coords.nil?
+            compute_coords()
+        end
+        return @coords[0]
+    end
+
+    def y
+        if @coords.nil?
+            compute_coords()
+        end
+        return @coords[1]
+    end
   end
 
   module Statement2
@@ -1020,12 +1055,16 @@ module Verilog
   end
 
   module Arguments0
-    def ws
+    def ws1
       elements[1]
     end
 
     def ex
       elements[2]
+    end
+
+    def ws2
+      elements[3]
     end
   end
 
@@ -1104,6 +1143,10 @@ module Verilog
                 if r8
                   r9 = _nt_expr
                   s6 << r9
+                  if r9
+                    r10 = _nt_ws
+                    s6 << r10
+                  end
                 end
               end
               if s6.last
@@ -1122,17 +1165,17 @@ module Verilog
             r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
             s0 << r5
             if r5
-              r10 = _nt_ws
-              s0 << r10
-              if r10
+              r11 = _nt_ws
+              s0 << r11
+              if r11
                 if has_terminal?(')', false, index)
-                  r11 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                  r12 = instantiate_node(SyntaxNode,input, index...(index + 1))
                   @index += 1
                 else
                   terminal_parse_failure(')')
-                  r11 = nil
+                  r12 = nil
                 end
-                s0 << r11
+                s0 << r12
               end
             end
           end
