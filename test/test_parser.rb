@@ -37,7 +37,7 @@ class TestParser < Test::Unit::TestCase
         str = VerilogLexer.LexString(@comment_str)
         assert_equal("module Test; wire x; endmodule", str)
         str = VerilogLexer.LexString(@simple_str)
-        assert_equal("module Hello (input x, output [31:0] y); CSA CSA_0_3(x[1], y[2]); endmodule", str)
+        assert_equal("module Hello (input x, output [31:0] y); CSA CSA_0_3(x[1], y[2], z); endmodule", str)
     end
 
     def test_simple_parse()
@@ -49,16 +49,30 @@ class TestParser < Test::Unit::TestCase
     def test_parser_aggregate()
         parser = VlParser.new()
         res = parser.parse(@simple_str)
-        assert_instance_of(VlFile, res)
-        assert_equal(1, res.elements.count, "There's only one module in this file")
-        assert_equal(res.elements.count, res.modules.count, "modules is an alias of elements")
-        assert_instance_of(VlModule, res.modules[0])
+        assert_equal(1, res.modules.count, "There's only one module in this file")
         mod = res.modules[0]
-        assert_equal("Hello", mod.name.to_s)
-        mod.parameters[0].elements.each { |e| 
-            puts "#{e} = #{e.text_value}"
-        }
-        assert_equal(2, mod.parameters[0].elements.count)
+        assert_equal("Hello", mod.module_name.to_s)
+        assert_equal(2, mod.parameters.count)
+        assert_equal("input", mod.parameters[0].type)
+        assert_equal("output", mod.parameters[1].type)
+        assert(!mod.parameters[0].array?)
+        assert(mod.parameters[1].array?)
+        assert_equal("[31:0]", mod.parameters[1].size)
+        assert_equal(1, mod.content.statements.count)
+        statement = mod.content.statements[0]
+        assert_equal(:instantiation, statement.statement_kind)
+        assert_equal("CSA", statement.type)
+        assert_equal("CSA_0_3", statement.name)
+        assert_equal(3, statement.arguments.count)
+        assert(!statement.arguments[0].is_number?)
+        assert_equal("x", statement.arguments[0].variable_name)
+        assert_equal("y", statement.arguments[1].variable_name)
+        assert_equal("z", statement.arguments[2].variable_name)
+        assert_not_nil(statement.arguments[0].index)
+        assert_not_nil(statement.arguments[1].index)
+        assert_nil(statement.arguments[2].index)
+        assert_equal(1, statement.arguments[0].index)
+        assert_equal(2, statement.arguments[1].index)
     end
 
 end
