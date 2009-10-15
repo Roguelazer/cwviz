@@ -17,7 +17,6 @@
 # along with CWVIZ.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'treetop'
-$:.push(File.dirname(__FILE__))
 require 'verilog.rb' # The Treetop-generated parser
 require 'verilog_lexer.rb'
 
