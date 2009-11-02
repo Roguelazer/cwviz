@@ -36,7 +36,7 @@ class Circuit
 
     # Get the number of circuit elements
     def num_elements
-        return @elements.count
+        return @elements.size
     end
 
     # The bounding box of this circuit. One end is always

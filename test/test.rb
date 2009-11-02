@@ -25,7 +25,7 @@ $:.push(File.join(File.dirname(__FILE__), "..", "src"))
 $DATA_BASE=File.join(File.dirname(__FILE__), "data")
 
 
-if (ARGV.nil?)
+if (ARGV.size == 0)
     # Require all of the test_*'s
     Dir.glob("test_*.rb") { |f|
         require f
