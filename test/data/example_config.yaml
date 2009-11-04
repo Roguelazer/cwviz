@@ -2,7 +2,7 @@
 circuit_images:
     - type: "CSAT"
       image_type: "svg"
-      image: "resources/CSA.svg"
+      image: "CSA.svg"
       width: 80
       height: 128
     - type: "CSA"
@@ -11,7 +11,7 @@ circuit_images:
       height: 120
     - type: "nand2"
       image_type: "png"
-      image: "resources/nand2.png"
+      image: "nand2.png"
       width: 80
       height: 24
 ...

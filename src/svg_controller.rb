@@ -20,7 +20,7 @@ require "circuit"
 require "svg"
 require "yaml"
 
-$RESOURCE_BASE=File.dirname(__FILE__)
+$RESOURCE_BASE=File.join(File.dirname(File.dirname(__FILE__)), "resources")
 
 # This class interfaces between the Circuit model and the SVG drawer
 class SVGController

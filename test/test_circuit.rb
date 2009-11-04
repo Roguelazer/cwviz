@@ -42,11 +42,11 @@ class TestCircuit < Test::Unit::TestCase
         assert_equal(2, coord.size, "There should be an 'x' and a 'y'")
         assert(coord.has_key?("x"))
         assert(coord.has_key?("y"))
-        assert_equal(160, coord["x"])
-        assert_equal(0, coord["y"])
+        assert_equal(240, coord["x"])
+        assert_equal(200, coord["y"])
 
         coord = @c.bounding_box
-        assert_equal(10, coord["x"])
-        assert_equal(10, coord["y"])
+        assert_equal(90, coord["x"])
+        assert_equal(210, coord["y"])
     end
 end
