@@ -21,11 +21,9 @@ require "verilog_parser.rb"
 
 # This class represents a complete circuit
 class Circuit
+    include Enumerable
     # The circuit name
     attr_reader :name
-
-    # Elements is a list of circuit elements
-    @elements
 
     # Constructor
     def initialize
@@ -65,12 +63,19 @@ class Circuit
         @bounding_box = {"x" => max_x, "y" => max_y }
     end
 
+    # Iterate over each circuit element
+    def each(&block)
+        @elements.each{ |e|
+            yield e
+        }
+    end
+
     # Create a new Circuit object from a Verilog file
     #
     # Arguments:
     # file_path:: A string containing the path to the file
     # root_module:: The name of the root module to visualize. If nil, will
-    #   visualize whatever module is defined first.
+    # visualize whatever module is defined first.
     #
     # Returns:
     # A new, initialized circuit

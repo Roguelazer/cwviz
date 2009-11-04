@@ -20,6 +20,8 @@ require 'treetop'
 require 'verilog.rb' # The Treetop-generated parser
 require 'verilog_lexer.rb'
 
+# This class wraps the Treetop-generated Verilog parser and the VerilogLexer
+# into a rather more managable class.
 class VlParser
     # Constructor
     def initialize

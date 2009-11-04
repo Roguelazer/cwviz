@@ -62,7 +62,7 @@ class SVG
 		@elements.each { |e|
 			@xml.root << e
 		}
-		io.print(@xml.to_s())
+		io << @xml.to_s
 	end
 
 	# Add an element. Should be a SVG::Object descendant

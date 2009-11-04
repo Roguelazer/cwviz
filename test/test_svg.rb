@@ -34,6 +34,16 @@ class TestSVG < Test::Unit::TestCase
 			r.stroke_width = "0.1em"
 			s.add_element(r)
 		}
-		s.write(STDOUT)
+        str = ""
+		s.write(str)
+        lines = str.split("\n")
+        f = File.new("data/svg_test1.svg", "r")
+        counter = 0
+        f.each { |line|
+            assert(line = lines[counter])
+            counter += 1
+        }
+        assert_equal(counter, lines.size)
+        f.close()
 	end
 end
