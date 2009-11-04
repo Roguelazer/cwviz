@@ -22,51 +22,80 @@ require 'xml'
 
 # Basic SVG document
 class SVG
-	class Object
-		attr_accessor :fill, :stroke, :stroke_width
-	end
+    class Object
+        attr_accessor :fill, :stroke, :stroke_width
+    end
 
-	class Rect < SVG::Object
-		def initialize(x, y, width, height)
-			@x = x
-			@y = y
-			@width = width
-			@height = height
-		end
+    class Rect < SVG::Object
+        def initialize(x, y, width, height)
+            @x = x
+            @y = y
+            @width = width
+            @height = height
+            @fill = ""
+            @stroke = "black"
+            @stroke_width = "1pt"
+        end
 
-		def xml
-			e = XML::Node.new("rect")
-			e["x"] = @x
-			e["y"] = @y
-			e["width"] = @width
-			e["height"] = @height
-			e["fill"] = @fill
-			e["stroke"] = @stroke
-			e["stroke-width"] = @stroke_width
-			return e
-		end
-	end
+        def xml
+            e = XML::Node.new("rect")
+            e["x"] = @x.to_s
+            e["y"] = @y.to_s
+            e["width"] = @width.to_s
+            e["height"] = @height.to_s
+            e["fill"] = @fill
+            e["stroke"] = @stroke
+            e["stroke-width"] = @stroke_width.to_s
+            return e
+        end
+    end
 
-	# Constructor
-	def initialize
-		@elements = []
-	end
+    class Image < SVG::Object
+        attr_accessor :preserve_aspect_ratio
 
-	# Write out the SVG document to an IO
-	def write(io)
-		@xml = XML::Document.new(xml_version="1.0")
-		@xml.root = XML::Node.new("svg")
-		@xml.root["xmlns:svg"] = "http://www.w3.org/2000/svg"
-		@xml.root["xmlns"] = "http://www.w3.org/2000/svg"
-		@xml.root["version"] = "1.0"
-		@elements.each { |e|
-			@xml.root << e
-		}
-		io << @xml.to_s
-	end
+        def initialize(x, y, width, height, source)
+            @x = x
+            @y = y
+            @width = width
+            @height = height
+            @source = source
+            @preserve_aspect_ratio = false
+        end
 
-	# Add an element. Should be a SVG::Object descendant
-	def add_element(node)
-		@elements.push(node.xml)
-	end
+        def xml
+            e = XML::Node.new("image")
+            e["x"] = @x.to_s
+            e["y"] = @y.to_s
+            e["preserveAspectRatio"] = @preserve_aspect_ratio ? "xMidYMid" : "None"
+            #e["viewBox"] = "0 0 #{@width} #{@height}"
+            e["width"] = @width.to_s
+            e["height"] = @height.to_s
+            e["xlink:href"] = File.expand_path(@source.to_s)
+            return e
+        end
+    end
+
+    # Constructor
+    def initialize
+        @elements = []
+    end
+
+    # Write out the SVG document to an IO
+    def write(io)
+        @xml = XML::Document.new(xml_version="1.0")
+        @xml.root = XML::Node.new("svg")
+        @xml.root["xmlns:svg"] = "http://www.w3.org/2000/svg"
+        @xml.root["xmlns:xlink"] = "http://www.w3.org/1999/xlink"
+        @xml.root["xmlns"] = "http://www.w3.org/2000/svg"
+        @xml.root["version"] = "1.0"
+        @elements.each { |e|
+            @xml.root << e
+        }
+        io << @xml.to_s
+    end
+
+    # Add an element. Should be a SVG::Object descendant
+    def add_element(node)
+        @elements.push(node.xml)
+    end
 end

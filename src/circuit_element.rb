@@ -24,7 +24,7 @@ class CircuitElement
     # The Y-coordinate of the circuit element
     attr_reader :y
 
-    # The type of the circuitelement
+    # The type of the circuit element
     attr_reader :type
 
     # Constructor
