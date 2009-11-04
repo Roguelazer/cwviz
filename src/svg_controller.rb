@@ -42,7 +42,9 @@ class SVGController
         # height:: height of the circuit element (in lambda)
         def initialize(file_type, file_name, width, height)
             @file_type = file_type.downcase()
-            @file_name = File.join($RESOURCE_BASE, file_name)
+            if (@file_type == "png" || @file_type == "svg")
+                @file_name = File.join($RESOURCE_BASE, file_name)
+            end
             @width = width
             @height = height
         end
@@ -52,7 +54,8 @@ class SVGController
         # Arguments:
         # x:: The x-coordinate to draw at
         # y:: The y-coordinate to draw at
-        def svg(x, y)
+        # name:: Name for this instance
+        def svg(x, y, name)
             obj = case @file_type
             when "rect":
                 SVG::Rect.new(x, y, @width, @height)
@@ -60,6 +63,8 @@ class SVGController
                 SVG::Image.new(x, y, @width, @height, @file_name)
             when "svg"
                 SVG::Image.new(x, y, @width, @height, @file_name)
+            when "textrect"
+                SVG::TextRect.new(x, y, @width, @height, name)
             end
             return obj
         end
@@ -83,7 +88,7 @@ class SVGController
         }
         # If no default was provided, just draw an 80x80 Rect
         if not @circuit_images.has_key?("default")
-            @circuit_images["default"] = CircuitImage.new("Rect", "", 80, 80)
+            @circuit_images["default"] = CircuitImage.new("TextRect", "", 80, 80)
         end
     end
 
@@ -93,15 +98,21 @@ class SVGController
     # circuit:: The Circuit to draw
     # io: an IO object to draw to
     def draw_circuit(circuit, io)
-        drawer = SVG.new
+        max_x = circuit.bounding_box["x"]
+        max_y = circuit.bounding_box["y"]
+        drawer = SVG.new(max_x, max_y)
         circuit.each { |circuit_element|
             im = nil
             if @circuit_images.has_key?(circuit_element.type.downcase())
-                im = @circuit_images[circuit_element.type.downcase()].svg(circuit_element.x, circuit_element.y)
+                im = @circuit_images[circuit_element.type.downcase()]
             else
-                im = @circuit_images["default"].svg(circuit_element.x, circuit_element.y)
+                im = @circuit_images["default"]
             end
-            drawer.add_element(im)
+            real_x = max_x - circuit_element.x - im.width
+            real_y = circuit_element.y
+            svg = im.svg(real_x, real_y, circuit_element.type)
+            svg.scale = true
+            drawer.add_element(svg)
         }
         io = drawer.write(io)
         return io

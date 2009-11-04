@@ -53,11 +53,11 @@ class Circuit
         max_x = 0
         max_y = 0
         @elements.each { |e|
-            if (e.x > max_x)
-                max_x = e.x
+            if (e.x + 80 > max_x)
+                max_x = e.x + 80
             end
-            if (e.y > max_y)
-                max_y = e.y
+            if (e.y + 200 > max_y)
+                max_y = e.y + 200
             end
         }
         @bounding_box = {"x" => max_x, "y" => max_y }
@@ -106,7 +106,7 @@ class Circuit
         @name = mod.module_name
         mod.statements.each { |statement|
             if (statement.statement_kind == :instantiation)
-                @elements.push(CircuitElement.new(statement.type, statement.x, statement.y))
+                @elements.push(CircuitElement.new(statement.type, statement.x, statement.y, statement.name))
             end
         }
     end

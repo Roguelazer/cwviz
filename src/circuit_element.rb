@@ -27,10 +27,14 @@ class CircuitElement
     # The type of the circuit element
     attr_reader :type
 
+    # The name of this instance
+    attr_reader :name
+
     # Constructor
-    def initialize(type, x, y)
+    def initialize(type, x, y, name)
         @x = x.to_i
         @y = y.to_i
         @type = type
+        @name = name
     end
 end

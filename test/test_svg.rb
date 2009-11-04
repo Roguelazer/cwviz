@@ -28,10 +28,11 @@ class TestSVG < Test::Unit::TestCase
 	def test_simple
 		s = SVG.new()
 		1.upto(10) { |i|
-			r = SVG::Rect.new("#{i}cm", "1cm", "0.5cm", "4cm")
+			r = SVG::Rect.new("#{i}", "1", "0.5", "4")
 			r.fill = "red"
 			r.stroke = "blue"
-			r.stroke_width = "0.1em"
+			r.stroke_width = "0.1"
+            r.scale = false
 			s.add_element(r)
 		}
         str = ""
@@ -46,4 +47,24 @@ class TestSVG < Test::Unit::TestCase
         assert_equal(counter, lines.size)
         f.close()
 	end
+
+    def test_id_generator
+        SVG::IDGenerator.reset()
+        i = SVG::IDGenerator.instance()
+        assert_equal("id000001", i.next())
+        assert_equal("id000002", SVG::IDGenerator.next())
+        assert_equal("id000003", i.next())
+        i.prefix = "rect"
+        assert_equal("rect000001", i.next())
+        assert_equal("rect000002", SVG::IDGenerator.next())
+        SVG::IDGenerator.prefix="id"
+        assert_equal("id000004", i.next())
+        assert_equal("test000001", i.next_with_prefix("test"))
+        assert_equal("test000002", SVG::IDGenerator.next_with_prefix("test"))
+        assert_equal("id000005", i.next())
+    end
+
+    def test_rect
+        r = SVG::Rect.new(1,2,3,4)
+    end
 end

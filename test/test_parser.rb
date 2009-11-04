@@ -41,7 +41,7 @@ class TestParser < Test::Unit::TestCase
         str = VerilogLexer.LexString(@comment_str)
         assert_equal("module Test; wire x; endmodule", str)
         str = VerilogLexer.LexString(@simple_str)
-        assert_equal("module Hello (input x, output [31:0] y); CSA CSA_0_3(x[1], y[2], z); endmodule", str)
+        assert_equal("module Hello (input x, output [31:0] y); CSAT CSA_0_3(x[1], y[2], z); endmodule", str)
     end
 
     def test_simple_parse()
@@ -65,7 +65,7 @@ class TestParser < Test::Unit::TestCase
         assert_equal(1, mod.content.statements.size)
         statement = mod.content.statements[0]
         assert_equal(:instantiation, statement.statement_kind)
-        assert_equal("CSA", statement.type)
+        assert_equal("CSAT", statement.type)
         assert_equal("CSA_0_3", statement.name)
         assert_equal(3, statement.arguments.size)
         assert(!statement.arguments[0].is_number?)

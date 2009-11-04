@@ -1,0 +1,17 @@
+---
+circuit_images:
+    - type: "CSAT"
+      image_type: "svg"
+      image: "resources/CSA.svg"
+      width: 80
+      height: 128
+    - type: "CSA"
+      image_type: "TextRect"
+      width: 80
+      height: 120
+    - type: "nand2"
+      image_type: "png"
+      image: "resources/nand2.png"
+      width: 80
+      height: 24
+...

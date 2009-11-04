@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.0">
+  <rect x="1" y="1" width="0.5" height="4" fill="red" stroke="blue" stroke-width="0.1"/>
+  <rect x="2" y="1" width="0.5" height="4" fill="red" stroke="blue" stroke-width="0.1"/>
+  <rect x="3" y="1" width="0.5" height="4" fill="red" stroke="blue" stroke-width="0.1"/>
+  <rect x="4" y="1" width="0.5" height="4" fill="red" stroke="blue" stroke-width="0.1"/>
+  <rect x="5" y="1" width="0.5" height="4" fill="red" stroke="blue" stroke-width="0.1"/>
+  <rect x="6" y="1" width="0.5" height="4" fill="red" stroke="blue" stroke-width="0.1"/>
+  <rect x="7" y="1" width="0.5" height="4" fill="red" stroke="blue" stroke-width="0.1"/>
+  <rect x="8" y="1" width="0.5" height="4" fill="red" stroke="blue" stroke-width="0.1"/>
+  <rect x="9" y="1" width="0.5" height="4" fill="red" stroke="blue" stroke-width="0.1"/>
+  <rect x="10" y="1" width="0.5" height="4" fill="red" stroke="blue" stroke-width="0.1"/>
+</svg>

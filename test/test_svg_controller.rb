@@ -30,7 +30,7 @@ class TestSVG < Test::Unit::TestCase
 	def test_configuration_load
         c = SVGController.new("data/example_config.yaml")
         assert_equal("png", c.circuit_images["nand2"].file_type)
-        assert_equal("svg", c.circuit_images["csa"].file_type)
+        assert_equal("svg", c.circuit_images["csat"].file_type)
 	end
 
     def test_empty_circuit
@@ -47,7 +47,15 @@ class TestSVG < Test::Unit::TestCase
     def test_twobox
         c = SVGController.new("data/example_config.yaml")
         cir = Circuit.new_from_verilog("data/drawer_test_1.v")
-        f = File.open("test_out.svg", "w")
+        f = File.open("out/test_twobox.svg", "w")
+        c.draw_circuit(cir, f)
+        f.close()
+    end
+
+    def test_big
+        c = SVGController.new("data/example_config.yaml")
+        cir = Circuit.new_from_verilog("data/mult_arrayFlat_16_16.v")
+        f = File.open("out/test_big.svg", "w")
         c.draw_circuit(cir, f)
         f.close()
     end
