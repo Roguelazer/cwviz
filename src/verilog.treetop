@@ -102,6 +102,12 @@ grammar Verilog
     end
 
     rule statement
+        "assign" ws name ws index? ws "=" ws name ws index? ";" {
+            def statement_kind
+                return :assignment
+            end
+        }
+        /
         ty:type ws na:name ws args:arguments ws ';' {
             def statement_kind
                 return :instantiation
