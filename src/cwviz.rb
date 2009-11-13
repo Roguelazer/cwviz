@@ -31,6 +31,8 @@
 #   Show this help
 # -o f, --out f
 #   Output to file f instead of to stdout
+# -c f, --config f
+#   Use f as the YAML configuration file
 
 # Make sure that the default include path is correct
 $:.push(File.dirname(__FILE__))
@@ -46,7 +48,8 @@ out_file=nil
 
 opts = GetoptLong.new(
     [ '--help', '-h', GetoptLong::NO_ARGUMENT],
-    [ '--out', '-o', GetoptLong::REQUIRED_ARGUMENT]
+    [ '--out', '-o', GetoptLong::REQUIRED_ARGUMENT],
+    [ '--config', '-c', GetoptLong::REQUIRED_ARGUMENT]
 )
 
 opts.each do |opt, arg|
@@ -55,6 +58,8 @@ opts.each do |opt, arg|
         RDoc::usage
     when '--out'
         out_file = arg.to_s
+    when '--config'
+        config_file = arg.to_s
     end
 end
 
