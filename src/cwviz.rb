@@ -41,7 +41,7 @@ require 'circuit'
 require 'svg_controller'
 
 require 'getoptlong'
-require 'rdoc/usage'
+#require 'rdoc/usage'
 
 config_file="#{$RESOURCE_BASE}/config.yaml"
 out_file=nil
