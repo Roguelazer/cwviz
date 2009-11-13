@@ -66,6 +66,20 @@ grammar Verilog
             def name
                 return na.text_value
             end
+        } 
+        /
+        ws na:name ws {
+            def type
+                return "Unknown"
+            end
+
+            def array?
+                return false
+            end
+
+            def name
+                return na.text_value
+            end
         }
     end
 
@@ -130,7 +144,7 @@ grammar Verilog
             end
         }
         /
-        ty:type ws na:name ws si:size? ws ';' {
+        ty:type ws si:size? ws na:name (ws "," ws name)* ws ';' {
             def statement_kind
                 return :declaration
             end

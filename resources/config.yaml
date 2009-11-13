@@ -10,4 +10,89 @@ circuit_images:
       image: "nand2.png"
       width: 80
       height: 24
+    - type: "nand3"
+      image_type: "png"
+      image: "nand2.png"
+      width: 80
+      height: 32
+    - type: "nor2"
+      image_type: "TextRect"
+      width: 80
+      height: 24
+    - type: "nor3"
+      image_type: "TextRect"
+      width: 80
+      height: 32
+    - type: "and2"
+      image_type: "TextRect"
+      width: 80
+      height: 40
+    - type: "and3"
+      image_type: "TextRect"
+      width: 80
+      height: 48
+    - type: "or2"
+      image_type: "TextRect"
+      width: 80
+      height: 40
+    - type: "buffer"
+      image_type: "TextRect"
+      width: 80
+      height: 32
+    - type: "inverter"
+      image_type: "TextRect"
+      width: 80
+      height: 16
+    - type: "halfAdd"
+      image_type: "TextRect"
+      width: 80
+      height: 80
+    - type: "fullAdd"
+      image_type: "TextRect"
+      width: 80
+      height: 128
+    - type: "fullAdd_x"
+      image_type: "TextRect"
+      width: 80
+      height: 216
+    - type: "fullAdd_i"
+      image_type: "TextRect"
+      width: 80
+      height: 96
+    - type: "maj"
+      image_type: "TextRect"
+      width: 80
+      hieght: 104
+    - type: "min"
+      image_type: "TextRect"
+      width: 80
+      height: 48
+    - type: "r4be"
+      image_type: "TextRect"
+      width: 80
+      height: 168
+    - type: "r4bs"
+      image_type: "TextRect"
+      width: 80
+      height: 128
+    - type: "subxor"
+      image_type: "TextRect"
+      width: 80
+      height: 24
+    - type: "sum_b"
+      image_type: "TextRect"
+      width: 80
+      height: 48
+    - type: "xor2"
+      image_type: "TextRect"
+      width: 80
+      height: 56
+    - type: "xor3"
+      image_type: "TextRect"
+      width: 80
+      height: 112
+    - type: "xnor2"
+      image_type: "TextRect"
+      width: 80
+      height: 56
 ...
