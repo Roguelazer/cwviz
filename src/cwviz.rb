@@ -57,7 +57,9 @@ opts = GetoptLong.new(
 opts.each do |opt, arg|
     case opt
     when '--help'
-        RDoc::usage
+        #RDoc::usage
+        puts "Help not currently available"
+        exit
     when '--out'
         out_file = arg.to_s
         extension = /\.(\w*)$/.match(out_file)[1]
@@ -73,7 +75,8 @@ end
 
 if ARGV.length != 1
     puts "Incorrect number of arguments"
-    RDoc::usage
+    #RDoc::usage
+    exit
 end
 
 vl_file = ARGV.shift
