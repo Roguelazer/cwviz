@@ -45,6 +45,8 @@ require 'rdoc/usage'
 
 config_file="#{$RESOURCE_BASE}/config.yaml"
 out_file=nil
+real_out_file = nil
+out_type=:svg
 
 opts = GetoptLong.new(
     [ '--help', '-h', GetoptLong::NO_ARGUMENT],
@@ -58,6 +60,12 @@ opts.each do |opt, arg|
         RDoc::usage
     when '--out'
         out_file = arg.to_s
+        extension = /\.(\w*)$/.match(out_file)[1]
+        unless extension == "svg"
+            out_type = :converted
+            real_out_file = out_file
+            out_file = out_file.sub(/\.#{extension}$/, ".svg")
+        end
     when '--config'
         config_file = arg.to_s
     end
@@ -81,4 +89,8 @@ if out_file.nil?
     puts out
 else
     out.close
+    if out_type != :svg
+        `convert #{out_file} #{real_out_file}`
+        File.delete(out_file)
+    end
 end

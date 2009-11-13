@@ -144,7 +144,7 @@ grammar Verilog
             end
         }
         /
-        ty:type ws si:size? ws na:name (ws "," ws name)* ws ';' {
+        ty:type ws si:size? ws na:name si:size? (ws "," ws name)* ws ';' {
             def statement_kind
                 return :declaration
             end
