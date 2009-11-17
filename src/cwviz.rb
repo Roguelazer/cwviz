@@ -41,7 +41,7 @@ require 'circuit'
 require 'svg_controller'
 
 require 'getoptlong'
-#require 'rdoc/usage'
+require 'rdoc/usage'
 
 config_file="#{$RESOURCE_BASE}/config.yaml"
 out_file=nil
@@ -57,9 +57,7 @@ opts = GetoptLong.new(
 opts.each do |opt, arg|
     case opt
     when '--help'
-        #RDoc::usage
-        puts "Help not currently available"
-        exit
+        RDoc::usage
     when '--out'
         out_file = arg.to_s
         extension = /\.(\w*)$/.match(out_file)[1]
@@ -75,8 +73,7 @@ end
 
 if ARGV.length != 1
     puts "Incorrect number of arguments"
-    #RDoc::usage
-    exit
+    RDoc::usage
 end
 
 vl_file = ARGV.shift
