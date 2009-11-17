@@ -39,26 +39,32 @@ circuit_images:
       image_type: "TextRect"
       width: 80
       height: 32
+      fill: "#8eb77a"
     - type: "inverter"
       image_type: "TextRect"
       width: 80
       height: 16
+      fill: "#94d4dd"
     - type: "halfAdd"
       image_type: "TextRect"
       width: 80
       height: 80
+      fill: "#c1a8dd"
     - type: "fullAdd"
       image_type: "TextRect"
       width: 80
       height: 128
+      fill: "#dda8cc"
     - type: "fullAdd_x"
       image_type: "TextRect"
       width: 80
       height: 216
+      fill: "#dda8b9"
     - type: "fullAdd_i"
       image_type: "TextRect"
       width: 80
       height: 96
+      fill: "#dda8c5"
     - type: "maj"
       image_type: "TextRect"
       width: 80
@@ -75,6 +81,7 @@ circuit_images:
       image_type: "TextRect"
       width: 80
       height: 128
+      fill: "#a8a8dd"
     - type: "sumxor"
       image_type: "TextRect"
       width: 80
@@ -87,12 +94,15 @@ circuit_images:
       image_type: "TextRect"
       width: 80
       height: 56
+      fill: "#ddaca8"
     - type: "xor3"
       image_type: "TextRect"
       width: 80
       height: 112
+      fill: "#ddaca8"
     - type: "xnor2"
       image_type: "TextRect"
       width: 80
+      fill: "#ddaca8"
       height: 56
 ...

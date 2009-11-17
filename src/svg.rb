@@ -80,9 +80,10 @@ class SVG
         def initialize(options)
             @fill = options[:fill] || "#cccccc"
             @stroke = options[:stroke] || "0"
-            @stroke_width = options[:stroke_width] || 0
+            @stroke_width = options[:stroke_width] || 0.0
             @scale = options[:scale] || false
-            @scale_factor = 0.9
+            @scale_factor = options[:scale_factor] || 0.9
+            @scale_constant = options[:scale_constant] || 2.0
             @id = options[:id] || :auto_generate
             if (@id == :auto_generate)
                 @id_prefix = options[:id_prefix] || "id"
@@ -102,6 +103,9 @@ class SVG
 
         # Wrap a node in a scaling <g>. Return the new, wrapped node
         def scale(node)
+            if @scale == :constant
+                @scale_factor = 1.0 - @scale_constant.to_f / @width.to_f
+            end
             wrapper = XML::Node.new("g")
             xtrans = @x.to_f * (1.0-@scale_factor) + ((1.0-@scale_factor)/2.0) * @width
             ytrans = @y.to_f * (1.0-@scale_factor) + ((1.0-@scale_factor)/2.0) * @height
@@ -110,6 +114,13 @@ class SVG
             wrapper["transform"] = scaler + " " + translater
             wrapper << node
             return wrapper
+        end
+
+        def add_scale(node)
+            if @scale
+                return scale(node)
+            end
+            return node
         end
 
         def get_style
@@ -148,9 +159,7 @@ class SVG
             e["height"] = @height.to_s
             e["style"] = get_style()
             add_id(e)
-            if @scale
-                e = scale(e)
-            end
+            e = add_scale(e)
             return e
         end
     end
@@ -163,9 +172,10 @@ class SVG
 
         def xml
             group = XML::Node.new("g")
+            group["transform"] = "translate(#{@x}, #{@y})"
             e = XML::Node.new("text")
-            e["x"] = (@x + @width/2.0).to_s
-            e["y"] = (@y + @height/2.0).to_s
+            e["x"] = (@width/2.0).to_s
+            e["y"] = (@height/2.0).to_s
             e["width"] = @width.to_s
             e["height"] = @height.to_s
             #e["style"] = get_style()
@@ -174,12 +184,13 @@ class SVG
             e << @name
             old_scale = @scale
             @scale = false
-            group << super()
+            rect = super()
+            rect["x"] = "0"
+            rect["y"] = "0"
+            group << rect
             group << e
             @scale = old_scale
-            if @scale
-                group = scale(group)
-            end
+            group = add_scale(group)
             return group
         end
     end
@@ -212,9 +223,7 @@ class SVG
             e["xlink:href"] = File.expand_path(@source.to_s)
             e["style"] = get_style()
             add_id(e)
-            if (@scale)
-                e = scale(e)
-            end
+            e = add_scale(e)
             return e
         end
     end
