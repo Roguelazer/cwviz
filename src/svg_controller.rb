@@ -58,13 +58,14 @@ class SVGController
         # Arguments:
         # x:: The x-coordinate to draw at
         # y:: The y-coordinate to draw at
-        # name:: Name for this instance
-        def svg(x, y, name)
+        # ele:: The CircuitElement to draw
+        def svg(x, y, ele)
             optmap = {
                 "fill" => :fill,
                 "stroke" => :stroke,
                 "id" => :id,
-                "stroke_width" => :stroke_width
+                "stroke_width" => :stroke_width,
+                "scale_mode" => :scale
             }
             options = {:scale => :constant}
             optmap.each { |k, v|
@@ -72,10 +73,15 @@ class SVGController
                     options[v] = @ci[k]
                 end
             }
-            if @ci["label"] == "type"
-                options[:text] = @type
-            elsif @ci["label"] == "name"
-                options[:text] = name
+            options[:text] = case @ci["label"]
+            when "type"
+                @type
+            when "name"
+                ele.name
+            when "name_full"
+                ele.name_full
+            else
+                false
             end
             obj = case @file_type
             when "rect":
@@ -136,7 +142,7 @@ class SVGController
             end
             real_x = max_x - circuit_element.x - im.width
             real_y = circuit_element.y
-            svg = im.svg(real_x, real_y, circuit_element.name)
+            svg = im.svg(real_x, real_y, circuit_element)
             drawer.add_element(svg)
         }
         io = drawer.write(io)

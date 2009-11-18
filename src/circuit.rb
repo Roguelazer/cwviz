@@ -109,7 +109,8 @@ class Circuit
             if (statement.statement_kind == :instantiation)
                 @elements.push(CircuitElement.new(statement.type,
                                                   statement.x, statement.y,
-                                                  statement.name))
+                                                  statement.name,
+                                                  statement.name_full))
             end
         }
     end

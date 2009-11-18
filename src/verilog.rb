@@ -906,6 +906,13 @@ module Verilog
     end
 
     def name
+        if @coords.nil?
+            compute_coords()
+        end
+        return @name
+    end
+
+    def name_full
         return na.text_value
     end
 
@@ -915,11 +922,13 @@ module Verilog
 
     def compute_coords
         @coords = []
-        if (na.text_value =~ /.*_(\d+)_(\d+)/)
-            @coords[0] = $1.to_i
-            @coords[1] = $2.to_i
+        if (na.text_value =~ /(.*)_(\d+)_(\d+)/)
+            @coords[0] = $2.to_i
+            @coords[1] = $3.to_i
+            @name = $1.to_s
         else
             @coords = [0,0]
+            @name = ""
         end
     end
 
