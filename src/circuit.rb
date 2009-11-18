@@ -92,19 +92,23 @@ class Circuit
     # root_mod:: The name of the root module to visualize. If nil, will
     #   visualize whatever module is defined first.
     def load_verilog_file(file_path, root_mod=nil)
+        $stderr.puts "Beginning parse phase" if $verbose
         parser = VlParser.new()
         ast = parser.parse_file(file_path)
         if (ast.nil?)
             raise RuntimeError.new("Could not parse file at #{file_path}; " + 
                                    "error was #{parser.failure_reason()}")
         end
+        $stderr.puts "Finished parse phase" if $verbose
         mod = ast.modules[0]
+        $stderr.puts "Using module #{mod.module_name}" if $verbose
         if (!root_mod.nil?)
             mod = ast.modules.find { |m| 
                 m.module_name == root_mod
             }
         end
         @name = mod.module_name
+        $stderr.puts "Constructing circuit" if $verbose
         mod.statements.each { |statement|
             if (statement.statement_kind == :instantiation)
                 @elements.push(CircuitElement.new(statement.type,
@@ -113,6 +117,7 @@ class Circuit
                                                   statement.name_full))
             end
         }
+        $stderr.puts "Circuit constructed" if $verbose
     end
 
     private :compute_extents

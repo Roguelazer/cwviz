@@ -130,6 +130,7 @@ class SVGController
     # circuit:: The Circuit to draw
     # io: an IO object to draw to
     def draw_circuit(circuit, io)
+        $stderr.puts "Beginning draw phase" if $verbose
         max_x = circuit.bounding_box["x"]
         max_y = circuit.bounding_box["y"]
         drawer = SVG.new(max_x, max_y)
@@ -146,6 +147,7 @@ class SVGController
             drawer.add_element(svg)
         }
         io = drawer.write(io)
+        $stderr.puts "Finished draw phase" if $verbose
         return io
     end
 
