@@ -85,6 +85,7 @@ class SVG
             @scale_factor = options[:scale_factor] || 0.9
             @scale_constant = options[:scale_constant] || 2.0
             @id = options[:id] || :auto_generate
+            @text = options[:text] || false
             if (@id == :auto_generate)
                 @id_prefix = options[:id_prefix] || "id"
             end
@@ -101,8 +102,27 @@ class SVG
             return node
         end
 
-        # Wrap a node in a scaling <g>. Return the new, wrapped node
-        def scale(node)
+        def add_text(node, text)
+            group = XML::Node.new("g")
+            group["transform"] = "translate(#{@x}, #{@y})"
+            e = XML::Node.new("text")
+            e["x"] = (@width/2.0).to_s
+            e["y"] = (@height/2.0).to_s
+            e["width"] = @width.to_s
+            e["height"] = @height.to_s
+            e["text-anchor"] = "middle"
+            e["alignment-baseline"] = "central"
+            e << text
+            child = node
+            child["x"] = "0"
+            child["y"] = "0"
+            group << child
+            group << e
+            group = add_scale(group)
+            return group
+        end
+
+        def add_scale(node)
             if @scale == :constant
                 @scale_factor = 1.0 - @scale_constant.to_f / @width.to_f
             end
@@ -116,16 +136,21 @@ class SVG
             return wrapper
         end
 
-        def add_scale(node)
-            if @scale
-                return scale(node)
-            end
-            return node
-        end
-
         def get_style
             return "fill:#{@fill};fill-opacity:1;stroke:#{@stroke};stroke-width:#{@stroke_width};"
         end
+
+        def xml
+            node = self.get_xml
+            if (@text)
+                node=add_text(node, @text)
+            end
+            if (@scale)
+                node = add_scale(node)
+            end
+            add_id(node)
+        end
+
     end
 
     class Rect < SVG::Object
@@ -151,47 +176,14 @@ class SVG
             super(options)
         end
 
-        def xml
+        def get_xml
             e = XML::Node.new("rect")
             e["x"] = @x.to_s
             e["y"] = @y.to_s
             e["width"] = @width.to_s
             e["height"] = @height.to_s
             e["style"] = get_style()
-            add_id(e)
-            e = add_scale(e)
             return e
-        end
-    end
-
-    class TextRect < SVG::Rect
-        def initialize(x, y, width, height, name, options={})
-            @name = name
-            super(x, y, width, height, options)
-        end
-
-        def xml
-            group = XML::Node.new("g")
-            group["transform"] = "translate(#{@x}, #{@y})"
-            e = XML::Node.new("text")
-            e["x"] = (@width/2.0).to_s
-            e["y"] = (@height/2.0).to_s
-            e["width"] = @width.to_s
-            e["height"] = @height.to_s
-            #e["style"] = get_style()
-            e["text-anchor"] = "middle"
-            e["alignment-baseline"] = "central"
-            e << @name
-            old_scale = @scale
-            @scale = false
-            rect = super()
-            rect["x"] = "0"
-            rect["y"] = "0"
-            group << rect
-            group << e
-            @scale = old_scale
-            group = add_scale(group)
-            return group
         end
     end
 
@@ -212,7 +204,7 @@ class SVG
             super(options)
         end
 
-        def xml
+        def get_xml
             e = XML::Node.new("image")
             e["x"] = @x.to_s
             e["y"] = @y.to_s
@@ -222,8 +214,6 @@ class SVG
             e["height"] = @height.to_s
             e["xlink:href"] = File.expand_path(@source.to_s)
             e["style"] = get_style()
-            add_id(e)
-            e = add_scale(e)
             return e
         end
     end

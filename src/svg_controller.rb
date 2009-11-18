@@ -58,7 +58,21 @@ class SVGController
         # y:: The y-coordinate to draw at
         # name:: Name for this instance
         def svg(x, y, name)
+            optmap = {
+                "fill" => :fill,
+                "stroke" => :stroke,
+                "id" => :id,
+                "stroke_width" => :stroke_width
+            }
             options = {:scale => :constant}
+            optmap.each { |k, v|
+                if @ci[k]
+                    options[v] = @ci[k]
+                end
+            }
+            if @ci["label"] == "type"
+                options[:text] = name
+            end
             obj = case @file_type
             when "rect":
                 SVG::Rect.new(x, y, @width, @height, options)
@@ -67,10 +81,8 @@ class SVGController
             when "svg"
                 SVG::Image.new(x, y, @width, @height, @file_name, options)
             when "textrect"
-                if @ci["fill"]
-                    options[:fill] = @ci["fill"]
-                end
-                SVG::TextRect.new(x, y, @width, @height, name, options)
+                @ci["label"] = "type"
+                SVG::Rect.new(x, y, @width, @height, options)
             end
             return obj
         end
@@ -86,10 +98,12 @@ class SVGController
 
     # Load from a given YAML Object
     def load_from_yaml(yaml_obj)
+        global_options = yaml_obj["defaults"] || {}
         @circuit_images = {}
         yaml_obj["circuit_images"].each { |ci|
+            opts = global_options.merge(ci)
             imobj = CircuitImage.new(ci["image_type"], ci["image"],
-                                    ci["width"], ci["height"], ci)
+                                    ci["width"], ci["height"], opts)
             @circuit_images[ci["type"].downcase()] = imobj
         }
         # If no default was provided, just draw an 80x80 Rect
