@@ -95,7 +95,8 @@ class Circuit
         parser = VlParser.new()
         ast = parser.parse_file(file_path)
         if (ast.nil?)
-            raise RuntimeError.new("Could not parse file at #{file_path}; error was #{parser.failure_reason()}")
+            raise RuntimeError.new("Could not parse file at #{file_path}; " + 
+                                   "error was #{parser.failure_reason()}")
         end
         mod = ast.modules[0]
         if (!root_mod.nil?)
@@ -106,7 +107,9 @@ class Circuit
         @name = mod.module_name
         mod.statements.each { |statement|
             if (statement.statement_kind == :instantiation)
-                @elements.push(CircuitElement.new(statement.type, statement.x, statement.y, statement.name))
+                @elements.push(CircuitElement.new(statement.type,
+                                                  statement.x, statement.y,
+                                                  statement.name))
             end
         }
     end

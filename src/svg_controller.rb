@@ -40,8 +40,9 @@ class SVGController
         # file_name:: A relative path to the source file
         # width:: width of the circuit element (in lambda)
         # height:: height of the circuit element (in lambda)
+        # type:: The string representing the type of this image (AND, etc.)
         # ci:: A hash of extra parameters
-        def initialize(file_type, file_name, width, height, ci = {})
+        def initialize(file_type, file_name, width, height, type, ci = {})
             @file_type = file_type.downcase()
             if (@file_type == "png" || @file_type == "svg")
                 @file_name = File.join($RESOURCE_BASE, file_name)
@@ -49,6 +50,7 @@ class SVGController
             @width = width
             @height = height
             @ci = ci
+            @type = type
         end
 
         # Get the SVG to draw this CircuitImage
@@ -71,6 +73,8 @@ class SVGController
                 end
             }
             if @ci["label"] == "type"
+                options[:text] = @type
+            elsif @ci["label"] == "name"
                 options[:text] = name
             end
             obj = case @file_type
@@ -102,13 +106,15 @@ class SVGController
         @circuit_images = {}
         yaml_obj["circuit_images"].each { |ci|
             opts = global_options.merge(ci)
-            imobj = CircuitImage.new(ci["image_type"], ci["image"],
-                                    ci["width"], ci["height"], opts)
+            imobj = CircuitImage.new(opts["image_type"], opts["image"],
+                                    opts["width"], opts["height"], opts["type"],
+                                    opts)
             @circuit_images[ci["type"].downcase()] = imobj
         }
         # If no default was provided, just draw an 80x80 Rect
         if not @circuit_images.has_key?("default")
-            @circuit_images["default"] = CircuitImage.new("TextRect", "", 80, 80)
+            @circuit_images["default"] = CircuitImage.new("TextRect", "",
+                                                          80, 80, "default")
         end
     end
 
@@ -130,7 +136,7 @@ class SVGController
             end
             real_x = max_x - circuit_element.x - im.width
             real_y = circuit_element.y
-            svg = im.svg(real_x, real_y, circuit_element.type)
+            svg = im.svg(real_x, real_y, circuit_element.name)
             drawer.add_element(svg)
         }
         io = drawer.write(io)

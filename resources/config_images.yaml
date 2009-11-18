@@ -106,6 +106,6 @@ circuit_images:
 
 defaults:
     image_type: "TextRect"
-    label: type
+    label: name
     fill: "green"
 ...
