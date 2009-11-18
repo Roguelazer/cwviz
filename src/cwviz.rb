@@ -33,6 +33,8 @@
 #   Output to file f instead of to stdout
 # -c f, --config f
 #   Use f as the YAML configuration file
+# -v, --verbose
+#   Be verbose
 
 # Make sure that the default include path is correct
 $:.push(File.dirname(__FILE__))
@@ -47,11 +49,13 @@ config_file="#{$RESOURCE_BASE}/config.yaml"
 out_file=nil
 real_out_file = nil
 out_type=:svg
+$verbose=false
 
 opts = GetoptLong.new(
     [ '--help', '-h', GetoptLong::NO_ARGUMENT],
     [ '--out', '-o', GetoptLong::REQUIRED_ARGUMENT],
-    [ '--config', '-c', GetoptLong::REQUIRED_ARGUMENT]
+    [ '--config', '-c', GetoptLong::REQUIRED_ARGUMENT],
+    [ '--verbose', '-v', GetoptLong::NO_ARGUMENT]
 )
 
 opts.each do |opt, arg|
@@ -68,6 +72,8 @@ opts.each do |opt, arg|
         end
     when '--config'
         config_file = arg.to_s
+    when '--verbose'
+        $verbose = true
     end
 end
 
@@ -90,7 +96,10 @@ if out_file.nil?
 else
     out.close
     if out_type != :svg
+        $stderr.puts "Beginning SVG->PNG conversion phase" if $verbose
         `convert #{out_file} #{real_out_file}`
         File.delete(out_file)
+        $stderr.puts "Conversion phase complete" if $verbose
+        $stderr.puts "Output written to #{real_out_file}" if $verbose
     end
 end
