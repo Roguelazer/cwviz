@@ -30,11 +30,15 @@ class CircuitElement
     # The name of this instance
     attr_reader :name
 
+    # The full name of this instance
+    attr_reader :name_full
+
     # Constructor
-    def initialize(type, x, y, name)
+    def initialize(type, x, y, name, name_full)
         @x = x.to_i
         @y = y.to_i
         @type = type
         @name = name
+        @name_full = name_full
     end
 end

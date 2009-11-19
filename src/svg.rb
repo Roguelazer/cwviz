@@ -80,10 +80,12 @@ class SVG
         def initialize(options)
             @fill = options[:fill] || "#cccccc"
             @stroke = options[:stroke] || "0"
-            @stroke_width = options[:stroke_width] || 0
+            @stroke_width = options[:stroke_width] || 0.0
             @scale = options[:scale] || false
-            @scale_factor = 0.9
+            @scale_factor = options[:scale_factor] || 0.9
+            @scale_constant = options[:scale_constant] || 2.0
             @id = options[:id] || :auto_generate
+            @text = options[:text] || false
             if (@id == :auto_generate)
                 @id_prefix = options[:id_prefix] || "id"
             end
@@ -100,8 +102,30 @@ class SVG
             return node
         end
 
-        # Wrap a node in a scaling <g>. Return the new, wrapped node
-        def scale(node)
+        def add_text(node, text)
+            group = XML::Node.new("g")
+            group["transform"] = "translate(#{@x}, #{@y})"
+            e = XML::Node.new("text")
+            e["x"] = (@width/2.0).to_s
+            e["y"] = (@height/2.0).to_s
+            e["width"] = @width.to_s
+            e["height"] = @height.to_s
+            e["text-anchor"] = "middle"
+            e["alignment-baseline"] = "central"
+            e << text
+            child = node
+            child["x"] = "0"
+            child["y"] = "0"
+            group << child
+            group << e
+            group = add_scale(group)
+            return group
+        end
+
+        def add_scale(node)
+            if @scale == :constant
+                @scale_factor = 1.0 - @scale_constant.to_f / @width.to_f
+            end
             wrapper = XML::Node.new("g")
             xtrans = @x.to_f * (1.0-@scale_factor) + ((1.0-@scale_factor)/2.0) * @width
             ytrans = @y.to_f * (1.0-@scale_factor) + ((1.0-@scale_factor)/2.0) * @height
@@ -115,6 +139,18 @@ class SVG
         def get_style
             return "fill:#{@fill};fill-opacity:1;stroke:#{@stroke};stroke-width:#{@stroke_width};"
         end
+
+        def xml
+            node = self.get_xml
+            if (@text)
+                node=add_text(node, @text)
+            end
+            if (@scale)
+                node = add_scale(node)
+            end
+            add_id(node)
+        end
+
     end
 
     class Rect < SVG::Object
@@ -140,47 +176,14 @@ class SVG
             super(options)
         end
 
-        def xml
+        def get_xml
             e = XML::Node.new("rect")
             e["x"] = @x.to_s
             e["y"] = @y.to_s
             e["width"] = @width.to_s
             e["height"] = @height.to_s
             e["style"] = get_style()
-            add_id(e)
-            if @scale
-                e = scale(e)
-            end
             return e
-        end
-    end
-
-    class TextRect < SVG::Rect
-        def initialize(x, y, width, height, name, options={})
-            @name = name
-            super(x, y, width, height, options)
-        end
-
-        def xml
-            group = XML::Node.new("g")
-            e = XML::Node.new("text")
-            e["x"] = (@x + @width/2.0).to_s
-            e["y"] = (@y + @height/2.0).to_s
-            e["width"] = @width.to_s
-            e["height"] = @height.to_s
-            #e["style"] = get_style()
-            e["text-anchor"] = "middle"
-            e["alignment-baseline"] = "central"
-            e << @name
-            old_scale = @scale
-            @scale = false
-            group << super()
-            group << e
-            @scale = old_scale
-            if @scale
-                group = scale(group)
-            end
-            return group
         end
     end
 
@@ -201,7 +204,7 @@ class SVG
             super(options)
         end
 
-        def xml
+        def get_xml
             e = XML::Node.new("image")
             e["x"] = @x.to_s
             e["y"] = @y.to_s
@@ -211,10 +214,6 @@ class SVG
             e["height"] = @height.to_s
             e["xlink:href"] = File.expand_path(@source.to_s)
             e["style"] = get_style()
-            add_id(e)
-            if (@scale)
-                e = scale(e)
-            end
             return e
         end
     end

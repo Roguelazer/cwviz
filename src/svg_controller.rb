@@ -40,13 +40,17 @@ class SVGController
         # file_name:: A relative path to the source file
         # width:: width of the circuit element (in lambda)
         # height:: height of the circuit element (in lambda)
-        def initialize(file_type, file_name, width, height)
+        # type:: The string representing the type of this image (AND, etc.)
+        # ci:: A hash of extra parameters
+        def initialize(file_type, file_name, width, height, type, ci = {})
             @file_type = file_type.downcase()
             if (@file_type == "png" || @file_type == "svg")
                 @file_name = File.join($RESOURCE_BASE, file_name)
             end
             @width = width
             @height = height
+            @ci = ci
+            @type = type
         end
 
         # Get the SVG to draw this CircuitImage
@@ -54,17 +58,41 @@ class SVGController
         # Arguments:
         # x:: The x-coordinate to draw at
         # y:: The y-coordinate to draw at
-        # name:: Name for this instance
-        def svg(x, y, name)
+        # ele:: The CircuitElement to draw
+        def svg(x, y, ele)
+            optmap = {
+                "fill" => :fill,
+                "stroke" => :stroke,
+                "id" => :id,
+                "stroke_width" => :stroke_width,
+                "scale_mode" => :scale
+            }
+            options = {:scale => :constant}
+            optmap.each { |k, v|
+                if @ci[k]
+                    options[v] = @ci[k]
+                end
+            }
+            options[:text] = case @ci["label"]
+            when "type"
+                @type
+            when "name"
+                ele.name
+            when "name_full"
+                ele.name_full
+            else
+                false
+            end
             obj = case @file_type
             when "rect":
-                SVG::Rect.new(x, y, @width, @height)
+                SVG::Rect.new(x, y, @width, @height, options)
             when "png"
-                SVG::Image.new(x, y, @width, @height, @file_name)
+                SVG::Image.new(x, y, @width, @height, @file_name, options)
             when "svg"
-                SVG::Image.new(x, y, @width, @height, @file_name)
+                SVG::Image.new(x, y, @width, @height, @file_name, options)
             when "textrect"
-                SVG::TextRect.new(x, y, @width, @height, name)
+                @ci["label"] = "type"
+                SVG::Rect.new(x, y, @width, @height, options)
             end
             return obj
         end
@@ -80,15 +108,19 @@ class SVGController
 
     # Load from a given YAML Object
     def load_from_yaml(yaml_obj)
+        global_options = yaml_obj["defaults"] || {}
         @circuit_images = {}
         yaml_obj["circuit_images"].each { |ci|
-            imobj = CircuitImage.new(ci["image_type"], ci["image"],
-                                    ci["width"], ci["height"])
+            opts = global_options.merge(ci)
+            imobj = CircuitImage.new(opts["image_type"], opts["image"],
+                                    opts["width"], opts["height"], opts["type"],
+                                    opts)
             @circuit_images[ci["type"].downcase()] = imobj
         }
         # If no default was provided, just draw an 80x80 Rect
         if not @circuit_images.has_key?("default")
-            @circuit_images["default"] = CircuitImage.new("TextRect", "", 80, 80)
+            @circuit_images["default"] = CircuitImage.new("TextRect", "",
+                                                          80, 80, "default")
         end
     end
 
@@ -111,8 +143,7 @@ class SVGController
             end
             real_x = max_x - circuit_element.x - im.width
             real_y = circuit_element.y
-            svg = im.svg(real_x, real_y, circuit_element.type)
-            svg.scale = true
+            svg = im.svg(real_x, real_y, circuit_element)
             drawer.add_element(svg)
         }
         io = drawer.write(io)
