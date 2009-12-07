@@ -35,6 +35,11 @@
 #   Use f as the YAML configuration file
 # -v, --verbose
 #   Be verbose
+#   
+# == Dependencies
+#
+# To output to non-svg files, cwviz requires imagemagick and
+# inkscape >= 0.43
 
 # Make sure that the default include path is correct
 $:.push(File.dirname(__FILE__))
