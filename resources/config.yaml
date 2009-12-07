@@ -1,18 +1,12 @@
 ---
 circuit_images:
     - type: "CSA"
-      image_type: "svg"
-      image: "CSA.svg"
       width: 80
       height: 128
     - type: "nand2"
-      image_type: "png"
-      image: "nand2.png"
       width: 80
       height: 24
     - type: "nand3"
-      image_type: "png"
-      image: "nand2.png"
       width: 80
       height: 32
     - type: "nor2"
@@ -95,4 +89,10 @@ circuit_images:
       image_type: "TextRect"
       width: 80
       height: 56
+
+defaults:
+    image_type: "TextRect"
+    label: type
+    fill: "#cccccc"
+    scale_mode: constant
 ...

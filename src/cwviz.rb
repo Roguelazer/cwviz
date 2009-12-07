@@ -64,10 +64,16 @@ opts.each do |opt, arg|
         RDoc::usage
     when '--out'
         out_file = arg.to_s
+        real_out_file = out_file
         extension = /\.(\w*)$/.match(out_file)[1]
-        unless extension == "svg"
-            out_type = :converted
-            real_out_file = out_file
+        out_type = case extension
+            when "svg" then :svg
+            when "png" then :png
+            when "pdf" then :pdf
+            when "eps" then :eps
+            else :converted
+        end
+        if out_type  != :svg
             out_file = out_file.sub(/\.#{extension}$/, ".svg")
         end
     when '--config'
@@ -95,11 +101,35 @@ if out_file.nil?
     puts out
 else
     out.close
-    if out_type != :svg
-        $stderr.puts "Beginning SVG->PNG conversion phase" if $verbose
+    case out_type
+    when :svg
+        $stderr.puts "No conversion necessary, keeping SVG" if $verbose
+    when :png
+        $stderr.puts "Beginning Inkscape conversion"
+        `inkscape -z -e #{real_out_file} #{out_file}`
+        File.delete(out_file)
+        $stderr.puts "Conversion phase complete" if $verbose
+    when :pdf
+        # Inkscape on chips doesn't do direct-to-pdf, so have
+        # to go through eps
+        eps_out_file = out_file.sub(/\.svg/, ".eps")
+        $stderr.puts "Beginning SVG->EPS conversion" if $verbose
+        `inkscape -z -E #{eps_out_file} #{out_file}`
+        File.delete(out_file)
+        $stderr.puts "Beginning EPS->PDF conversion" if $verbose
+        `ps2pdf -dEPSCrop #{eps_out_file} #{real_out_file}`
+        File.delete(eps_out_file)
+        $stderr.puts "Conversion phase complete" if $verbose
+    when :eps
+        $stderr.puts "Beginning Inkscape conversion" if $verbose
+        `inkscape -z -E #{real_out_file} #{out_file}`
+        File.delete(out_file)
+        $stderr.puts "Conversion phase complete" if $verbose
+    else
+        $stderr.puts "Beginning SVG->other conversion phase" if $verbose
         `convert #{out_file} #{real_out_file}`
         File.delete(out_file)
         $stderr.puts "Conversion phase complete" if $verbose
-        $stderr.puts "Output written to #{real_out_file}" if $verbose
     end
+    $stderr.puts "Output written to #{real_out_file}" if $verbose
 end
