@@ -82,6 +82,9 @@ class SVG
             @stroke = options[:stroke] || "0"
             @stroke_width = options[:stroke_width] || 0.0
             @scale = options[:scale] || false
+            if (@scale == "none")
+                @scale = false
+            end
             @scale_factor = options[:scale_factor] || 0.9
             @scale_constant = options[:scale_constant] || 2.0
             @id = options[:id] || :auto_generate
@@ -118,12 +121,14 @@ class SVG
             child["y"] = "0"
             group << child
             group << e
-            group = add_scale(group)
+            if (@scale)
+                group = add_scale(group)
+            end
             return group
         end
 
         def add_scale(node)
-            if @scale == :constant
+            if @scale == "constant"
                 @scale_factor = 1.0 - @scale_constant.to_f / @width.to_f
             end
             wrapper = XML::Node.new("g")

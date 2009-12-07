@@ -67,7 +67,7 @@ class SVGController
                 "stroke_width" => :stroke_width,
                 "scale_mode" => :scale
             }
-            options = {:scale => :constant}
+            options = {:scale => "constant"}
             optmap.each { |k, v|
                 if @ci[k]
                     options[v] = @ci[k]
