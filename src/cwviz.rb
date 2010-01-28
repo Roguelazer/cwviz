@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 # cwviz v0.2
 #
-# Copyright (C) 2009 James Brown.
+# Copyright (C) 2009-2010 James Brown <jbrown@cs.hmc.edu>.
 #
 # This file is part of CWVIZ.
 #
