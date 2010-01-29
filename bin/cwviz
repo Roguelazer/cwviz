@@ -18,7 +18,5 @@
 #
 # This is a wrapper script to launch cwviz
 
-SRCDIR="$(dirname $(dirname "$0"))/src"
-pushd $SRCDIR > /dev/null
-ruby cwviz.rb "$@"
-popd > /dev/null
+SRCDIR=$(dirname $(dirname "$0"))/src
+ruby "${SRCDIR}/cwviz.rb" "$@"
