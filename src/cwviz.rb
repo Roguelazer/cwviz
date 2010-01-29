@@ -110,7 +110,7 @@ else
     when :svg
         $stderr.puts "No conversion necessary, keeping SVG" if $verbose
     when :png
-        $stderr.puts "Beginning Inkscape conversion"
+        $stderr.puts "Beginning Inkscape conversion" if $verbose
         `inkscape -z -e #{real_out_file} #{out_file}`
         File.delete(out_file)
         $stderr.puts "Conversion phase complete" if $verbose
