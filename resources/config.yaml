@@ -94,5 +94,5 @@ defaults:
     image_type: "TextRect"
     label: type
     fill: "#cccccc"
-    scale_mode: constant
+    scale_mode: none
 ...

@@ -118,12 +118,13 @@ class SVG
             child["y"] = "0"
             group << child
             group << e
-            group = add_scale(group)
             return group
         end
 
         def add_scale(node)
-            if @scale == :constant
+            if @scale == "none"
+                return node
+            elsif @scale == "constant"
                 @scale_factor = 1.0 - @scale_constant.to_f / @width.to_f
             end
             wrapper = XML::Node.new("g")
