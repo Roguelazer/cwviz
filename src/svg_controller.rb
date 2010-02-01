@@ -102,8 +102,13 @@ class SVGController
     #
     # Arguments
     # file_name:: The path to a configuration file
-    def initialize(file_name)
+    # autosize:: Either false or the path to a verilog file
+    def initialize(file_name, autosize)
         load_from_yaml(YAML.load_file(file_name))
+        if autosize != false
+            vl = VerilogSizes.new(autosize)
+            sizes = vl.load_sizes_from_verilog()
+        end
     end
 
     # Load from a given YAML Object
@@ -151,5 +156,5 @@ class SVGController
         return io
     end
 
-    private :load_from_yaml
+    private :load_from_yaml, :load_sizes_from_verilog
 end

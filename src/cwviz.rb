@@ -35,6 +35,9 @@
 #   Use f as the YAML configuration file
 # -v, --verbose
 #   Be verbose
+# -a, --autosize
+#   Automatically determine sizes by reading comments in the verilog
+#   argument
 #   
 # == Dependencies
 #
@@ -54,12 +57,14 @@ config_file="#{$RESOURCE_BASE}/config.yaml"
 out_file=nil
 real_out_file = nil
 out_type=:svg
+autosize=false
 $verbose=false
 
 opts = GetoptLong.new(
     [ '--help', '-h', GetoptLong::NO_ARGUMENT],
     [ '--out', '-o', GetoptLong::REQUIRED_ARGUMENT],
     [ '--config', '-c', GetoptLong::REQUIRED_ARGUMENT],
+    [ '--autosize', '-a', GetoptLong::NO_ARGUMENT],
     [ '--verbose', '-v', GetoptLong::NO_ARGUMENT]
 )
 
@@ -85,6 +90,8 @@ opts.each do |opt, arg|
         config_file = arg.to_s
     when '--verbose'
         $verbose = true
+    when '--autosize'
+        autosize = true
     end
 end
 
@@ -94,8 +101,11 @@ if ARGV.length != 1
 end
 
 vl_file = ARGV.shift
+if autosize
+    autosize=vl_file
+end
 circuit = Circuit.new_from_verilog(vl_file)
-controller = SVGController.new(config_file)
+controller = SVGController.new(config_file, autosize)
 if out_file.nil?
     out = ""
 else
