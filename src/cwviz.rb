@@ -41,6 +41,9 @@
 #   whatever that might be
 # -v, --verbose
 #   Be verbose
+# -a, --autosize
+#   Automatically determine sizes by reading comments in the verilog
+#   argument
 #   
 # == Dependencies
 #
@@ -63,6 +66,7 @@ out_file=nil
 real_out_file = nil
 out_type=:svg
 mod_name = nil
+autosize=false
 $verbose=false
 
 opts = GetoptLong.new(
@@ -71,6 +75,7 @@ opts = GetoptLong.new(
     [ '--config', '-c', GetoptLong::REQUIRED_ARGUMENT],
     [ '--scot-file', '-s', GetoptLong::REQUIRED_ARGUMENT],
     [ '--module-name', '-m', GetoptLong::REQUIRED_ARGUMENT],
+    [ '--autosize', '-a', GetoptLong::NO_ARGUMENT],
     [ '--verbose', '-v', GetoptLong::NO_ARGUMENT]
 )
 
@@ -100,6 +105,8 @@ opts.each do |opt, arg|
         scot_file = arg.to_s
     when '--module-name'
         mod_name = arg.to_s
+    when '--autosize'
+        autosize = true
     end
 end
 
@@ -109,11 +116,14 @@ if ARGV.length != 1
 end
 
 vl_file = ARGV.shift
+if autosize
+    autosize=vl_file
+end
 circuit = Circuit.new_from_verilog(vl_file)
 if (!scot_file.nil?)
     scot = Scot.new_from_file(scot_file)
 end
-controller = SVGController.new(config_file)
+controller = SVGController.new(config_file, autosize)
 if out_file.nil?
     out = ""
 else

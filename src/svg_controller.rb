@@ -16,9 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with CWVIZ.  If not, see <http://www.gnu.org/licenses/>.
 
-require "circuit"
 require "svg"
 require "yaml"
+require "circuit"
+require "verilog_sizes"
 
 $RESOURCE_BASE=File.join(File.dirname(__FILE__), "..", "resources")
 
@@ -28,10 +29,10 @@ class SVGController
 
     # The CircuitImage class represents a single circuit type's  image
     class CircuitImage
-        attr_reader :file_type
+        attr_accessor :file_type
         attr_reader :file_name
-        attr_reader :width
-        attr_reader :height
+        attr_accessor :width
+        attr_accessor :height
 
         # Initialize this CircuitImage
         #
@@ -102,8 +103,26 @@ class SVGController
     #
     # Arguments
     # file_name:: The path to a configuration file
-    def initialize(file_name)
+    # autosize:: Either false or the path to a verilog file
+    def initialize(file_name, autosize)
         load_from_yaml(YAML.load_file(file_name))
+        if autosize != false
+            vl = VerilogSizes.new(autosize)
+            vl.load_sizes_from_verilog()
+            vl.sizes.each { |type, height|
+                type = type.downcase
+                if (@circuit_images.has_key?(type))
+                    puts "Updating type #{type} from verilog sizes" if ($verbose)
+                    @circuit_images[type].height = height
+                else
+                    puts "Creating type #{type} from verilog" if ($verbose)
+                    imobj = @circuit_images["default"].clone
+                    imobj.file_type = type
+                    imobj.height = height
+                    @circuit_images[type] = imobj
+                end
+            }
+        end
     end
 
     # Load from a given YAML Object
@@ -119,8 +138,19 @@ class SVGController
         }
         # If no default was provided, just draw an 80x80 Rect
         if not @circuit_images.has_key?("default")
-            @circuit_images["default"] = CircuitImage.new("TextRect", "",
-                                                          80, 80, "default")
+            real_defaults = {
+                "image_type" => "TextRect",
+                "image" => "",
+                "width" => 80,
+                "height" => 80,
+                "type" => "default"
+            }
+            opts = real_defaults.merge(global_options)
+            @circuit_images["default"] = CircuitImage.new(opts["image_type"],
+                                                          opts["image"],
+                                                          opts["width"],
+                                                          opts["height"],
+                                                          opts["type"])
         end
     end
 
