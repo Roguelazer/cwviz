@@ -27,6 +27,10 @@ class CircuitElement
     # The type of the circuit element
     attr_reader :type
 
+    # A reference to the object that defines this element, if known
+    # Else, nil
+    attr_accessor :type_definition
+
     # The name of this instance
     attr_reader :name
 
@@ -40,5 +44,6 @@ class CircuitElement
         @type = type
         @name = name
         @name_full = name_full
+        @type_definition = nil
     end
 end

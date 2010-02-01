@@ -12,3 +12,9 @@ module Second (y, z);
     CSA CSA_80_0(x);
     CSA CSA_160_0(x);
 endmodule
+
+module CSA(item);
+    input item;
+
+    // Do nothing! Woo!
+    endmodule

@@ -123,7 +123,7 @@ mod = circuit.modules[0]
 if (!mod_name.nil?)
     mod = circuit.module(mod_name)
 end
-puts mod
+puts "About to visualize %s" % mod if ($verbose)
 controller.draw_circuit(mod, out)
 if out_file.nil?
     puts out

@@ -24,29 +24,14 @@ require "circuit_element.rb"
 class TestCircuit < Test::Unit::TestCase
     def setup
         @c = Circuit.new_from_verilog(File.join($DATA_BASE, "coords.v"))
-        @second = Circuit.new_from_verilog(File.join($DATA_BASE, "coords.v"), "Second")
     end
 
-    def test_load
-        assert_equal(2, @c.num_elements)
-        assert_equal("Coord_Test", @c.name)
+    def test_num_modules
+        assert_equal(2, @c.modules.size)
     end
 
-    def test_load_specific
-        assert_equal(3, @second.num_elements)
-        assert_equal("Second", @second.name)
-    end
-
-    def test_bounding_box
-        coord = @second.bounding_box
-        assert_equal(2, coord.size, "There should be an 'x' and a 'y'")
-        assert(coord.has_key?("x"))
-        assert(coord.has_key?("y"))
-        assert_equal(240, coord["x"])
-        assert_equal(200, coord["y"])
-
-        coord = @c.bounding_box
-        assert_equal(90, coord["x"])
-        assert_equal(210, coord["y"])
+    def test_names
+        assert_equal("Coord_Test", @c.modules[0].name)
+        assert_equal("Second", @c.modules[1].name)
     end
 end

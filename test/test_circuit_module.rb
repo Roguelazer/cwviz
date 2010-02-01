@@ -16,24 +16,59 @@
 # You should have received a copy of the GNU General Public License
 # along with CWVIZ.  If not, see <http://www.gnu.org/licenses/>.
 
-# This script tests the basics of Circuit
+# This script tests the basics of Circuit Modules
 
 require "circuit.rb"
+require "circuit_module.rb"
 require "circuit_element.rb"
 
 class TestCircuit < Test::Unit::TestCase
     def setup
         @sc = Circuit.new_from_verilog(File.join($DATA_BASE, "simple_mods.v"))
-    end
-
-    def test_modules_count
-        assert_equal(2, @sc.modules.size)
+        @ct = Circuit.new_from_verilog(File.join($DATA_BASE, "coords.v"))
+        @first = @sc.module("First")
+        @second = @sc.module("Second")
     end
 
     def test_inputs_outputs
-        assert_equal(['x'], @sc.module("First").inputs)
-        assert_equal([], @sc.module("First").outputs)
-        assert_equal(['y'], @sc.module("Second").inputs)
-        assert_equal(['z'], @sc.module("Second").outputs)
+        assert_equal(['x'], @first.inputs)
+        assert_equal([], @first.outputs)
+        assert_equal(['y'], @second.inputs)
+        assert_equal(['z'], @second.outputs)
+    end
+
+    def test_positional_io
+        assert_equal(:input, @second.param_type(0))
+        assert_equal(:output, @second.param_type(1))
+        assert_equal(:input, @first.param_type(0))
+        assert_equal(:unknown, @first.param_type(1))
+    end
+
+    def test_instantiations
+        assert_equal(2, @first.num_elements)
+        assert_equal(3, @second.num_elements)
+    end
+
+    def test_bounding_box
+        first = @ct.module("Coord_Test")
+        second = @ct.module("Second")
+
+        coord = second.bounding_box
+        assert_equal(2, coord.size, "There should be an 'x' and a 'y'")
+        assert(coord.has_key?("x"))
+        assert(coord.has_key?("y"))
+        assert_equal(240, coord["x"])
+        assert_equal(200, coord["y"])
+
+        coord = first.bounding_box
+        assert_equal(90, coord["x"])
+        assert_equal(210, coord["y"])
+    end
+
+    def test_connections
+        @first.each { |element|
+            assert_instance_of(CircuitModule, element.type_definition)
+            assert_equal("CSA", element.type_definition.name)
+        }
     end
 end

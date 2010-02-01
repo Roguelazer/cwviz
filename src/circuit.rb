@@ -83,6 +83,14 @@ class Circuit
         ast.modules.each { |m|
             @modules.push(CircuitModule.new(m))
         }
+        # Do second phase to connect subcell definitions to instances
+        @modules.each { |mod|
+            mod.each { |element|
+                element.type_definition = @modules.find { |m| 
+                    element.type == m.name
+                }
+            }
+        }
         $stderr.puts "Circuit constructed" if $verbose
     end
 end

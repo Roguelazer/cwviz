@@ -66,7 +66,8 @@ class TestParser < Test::Unit::TestCase
         statement = mod.content.statements[0]
         assert_equal(:instantiation, statement.statement_kind)
         assert_equal("CSAT", statement.type)
-        assert_equal("CSA_0_3", statement.name)
+        assert_equal("CSA", statement.name)
+        assert_equal("CSA_0_3", statement.name_full)
         assert_equal(3, statement.arguments.size)
         assert(!statement.arguments[0].is_number?)
         assert_equal("x", statement.arguments[0].variable_name)
