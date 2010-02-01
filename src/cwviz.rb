@@ -55,7 +55,6 @@ $:.push(File.dirname(__FILE__))
 
 require 'circuit'
 require 'svg_controller'
-require 'scot.rb'
 
 require 'getoptlong'
 require 'rdoc/usage'
