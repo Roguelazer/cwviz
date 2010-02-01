@@ -17,4 +17,4 @@ module CSA(item);
     input item;
 
     // Do nothing! Woo!
-    endmodule
+endmodule

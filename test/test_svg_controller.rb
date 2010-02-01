@@ -33,20 +33,9 @@ class TestSVG < Test::Unit::TestCase
         assert_equal("svg", c.circuit_images["csat"].file_type)
 	end
 
-    def test_empty_circuit
-        c = SVGController.new("data/example_config.yaml")
-        cir = Circuit.new
-        io = ""
-        c.draw_circuit(cir, io)
-        svg = SVG.new
-        io2 = ""
-        svg.write(io2)
-        assert_equal(io2, io)
-    end
-
     def test_twobox
         c = SVGController.new("data/example_config.yaml")
-        cir = Circuit.new_from_verilog("data/drawer_test_1.v")
+        cir = Circuit.new_from_verilog("data/drawer_test_1.v").modules[0]
         f = File.open("out/test_twobox.svg", "w")
         c.draw_circuit(cir, f)
         f.close()
@@ -54,7 +43,7 @@ class TestSVG < Test::Unit::TestCase
 
     def test_big
         c = SVGController.new("data/example_config.yaml")
-        cir = Circuit.new_from_verilog("data/mult_arrayFlat_16_16.v")
+        cir = Circuit.new_from_verilog("data/mult_arrayFlat_16_16.v").modules[0]
         f = File.open("out/test_big.svg", "w")
         c.draw_circuit(cir, f)
         f.close()

@@ -84,6 +84,9 @@ module Verilog
 
   module Vlmodule1
     def parameters
+        if param.text_value == ""
+            return []
+        end
         return param.value()
     end
 

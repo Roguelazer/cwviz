@@ -10,6 +10,9 @@ grammar Verilog
     rule vlmodule
         'module' ws na:name ws param:parameters? ws ';' ws co:content ws 'endmodule' ws {
             def parameters
+                if param.text_value == ""
+                    return []
+                end
                 return param.value()
             end
 
