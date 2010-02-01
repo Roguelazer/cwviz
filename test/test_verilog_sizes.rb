@@ -32,5 +32,6 @@ class TestVerilogSizes < Test::Unit::TestCase
         vs = VerilogSizes.new(File.join($DATA_BASE, "sizes.v"))
         vs.load_sizes_from_verilog()
         assert_equal(160, vs.sizes["fullAdd_xc"])
+        assert_equal(96, vs.sizes["r4bs"])
     end
 end
