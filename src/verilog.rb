@@ -296,9 +296,9 @@ module Verilog
 
   module Parameters2
     def value
-        [first_parameter] + rest_parameters.elements.map do |field|
-            field.param
-        end
+        return ([first_parameter] + rest_parameters.elements.map { |param_field|
+            param_field.param
+        })
     end
   end
 
@@ -434,6 +434,10 @@ module Verilog
     def name
         return na.text_value
     end
+
+    def to_s
+        return "{Parameter: name=#{name}, type=#{type}}"
+    end
   end
 
   module Parameter2
@@ -452,7 +456,7 @@ module Verilog
 
   module Parameter3
     def type
-        return "Unknown"
+        return :unknown
     end
 
     def array?
@@ -461,6 +465,10 @@ module Verilog
 
     def name
         return na.text_value
+    end
+
+    def to_s
+        return "{Untyped parameter: name=#{name}}"
     end
   end
 
@@ -833,6 +841,48 @@ module Verilog
   end
 
   module Statement0
+    def ws
+      elements[1]
+    end
+
+    def na
+      elements[2]
+    end
+
+  end
+
+  module Statement1
+    def statement_kind
+        return :input
+    end
+
+    def name
+        return na.text_value
+    end
+  end
+
+  module Statement2
+    def ws
+      elements[1]
+    end
+
+    def na
+      elements[2]
+    end
+
+  end
+
+  module Statement3
+    def statement_kind
+        return :output
+    end
+
+    def name
+        return na.text_value
+    end
+  end
+
+  module Statement4
     def ws1
       elements[1]
     end
@@ -863,13 +913,13 @@ module Verilog
 
   end
 
-  module Statement1
+  module Statement5
     def statement_kind
         return :assignment
     end
   end
 
-  module Statement2
+  module Statement6
     def ty
       elements[0]
     end
@@ -896,7 +946,7 @@ module Verilog
 
   end
 
-  module Statement3
+  module Statement7
     def statement_kind
         return :instantiation
     end
@@ -947,7 +997,7 @@ module Verilog
     end
   end
 
-  module Statement4
+  module Statement8
     def ws1
       elements[0]
     end
@@ -961,7 +1011,7 @@ module Verilog
     end
   end
 
-  module Statement5
+  module Statement9
     def ty
       elements[0]
     end
@@ -992,7 +1042,7 @@ module Verilog
 
   end
 
-  module Statement6
+  module Statement10
     def statement_kind
         return :declaration
     end
@@ -1014,7 +1064,7 @@ module Verilog
     end
   end
 
-  module Statement7
+  module Statement11
     def ex
       elements[0]
     end
@@ -1025,7 +1075,7 @@ module Verilog
 
   end
 
-  module Statement8
+  module Statement12
     def statement_kind
         return :expr
     end
@@ -1045,11 +1095,11 @@ module Verilog
 
     i0 = index
     i1, s1 = index, []
-    if has_terminal?("assign", false, index)
-      r2 = instantiate_node(SyntaxNode,input, index...(index + 6))
-      @index += 6
+    if has_terminal?("input", false, index)
+      r2 = instantiate_node(SyntaxNode,input, index...(index + 5))
+      @index += 5
     else
-      terminal_parse_failure("assign")
+      terminal_parse_failure("input")
       r2 = nil
     end
     s1 << r2
@@ -1060,62 +1110,14 @@ module Verilog
         r4 = _nt_name
         s1 << r4
         if r4
-          r5 = _nt_ws
-          s1 << r5
-          if r5
-            r7 = _nt_index
-            if r7
-              r6 = r7
-            else
-              r6 = instantiate_node(SyntaxNode,input, index...index)
-            end
-            s1 << r6
-            if r6
-              r8 = _nt_ws
-              s1 << r8
-              if r8
-                if has_terminal?("=", false, index)
-                  r9 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                  @index += 1
-                else
-                  terminal_parse_failure("=")
-                  r9 = nil
-                end
-                s1 << r9
-                if r9
-                  r10 = _nt_ws
-                  s1 << r10
-                  if r10
-                    r11 = _nt_name
-                    s1 << r11
-                    if r11
-                      r12 = _nt_ws
-                      s1 << r12
-                      if r12
-                        r14 = _nt_index
-                        if r14
-                          r13 = r14
-                        else
-                          r13 = instantiate_node(SyntaxNode,input, index...index)
-                        end
-                        s1 << r13
-                        if r13
-                          if has_terminal?(";", false, index)
-                            r15 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                            @index += 1
-                          else
-                            terminal_parse_failure(";")
-                            r15 = nil
-                          end
-                          s1 << r15
-                        end
-                      end
-                    end
-                  end
-                end
-              end
-            end
+          if has_terminal?(";", false, index)
+            r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
+            @index += 1
+          else
+            terminal_parse_failure(";")
+            r5 = nil
           end
+          s1 << r5
         end
       end
     end
@@ -1130,130 +1132,112 @@ module Verilog
     if r1
       r0 = r1
     else
-      i16, s16 = index, []
-      r17 = _nt_type
-      s16 << r17
-      if r17
-        r18 = _nt_ws
-        s16 << r18
-        if r18
-          r19 = _nt_name
-          s16 << r19
-          if r19
-            r20 = _nt_ws
-            s16 << r20
-            if r20
-              r21 = _nt_arguments
-              s16 << r21
-              if r21
-                r22 = _nt_ws
-                s16 << r22
-                if r22
-                  if has_terminal?(';', false, index)
-                    r23 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                    @index += 1
-                  else
-                    terminal_parse_failure(';')
-                    r23 = nil
-                  end
-                  s16 << r23
-                end
-              end
+      i6, s6 = index, []
+      if has_terminal?("output", false, index)
+        r7 = instantiate_node(SyntaxNode,input, index...(index + 6))
+        @index += 6
+      else
+        terminal_parse_failure("output")
+        r7 = nil
+      end
+      s6 << r7
+      if r7
+        r8 = _nt_ws
+        s6 << r8
+        if r8
+          r9 = _nt_name
+          s6 << r9
+          if r9
+            if has_terminal?(";", false, index)
+              r10 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure(";")
+              r10 = nil
             end
+            s6 << r10
           end
         end
       end
-      if s16.last
-        r16 = instantiate_node(SyntaxNode,input, i16...index, s16)
-        r16.extend(Statement2)
-        r16.extend(Statement3)
+      if s6.last
+        r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
+        r6.extend(Statement2)
+        r6.extend(Statement3)
       else
-        @index = i16
-        r16 = nil
+        @index = i6
+        r6 = nil
       end
-      if r16
-        r0 = r16
+      if r6
+        r0 = r6
       else
-        i24, s24 = index, []
-        r25 = _nt_type
-        s24 << r25
-        if r25
-          r26 = _nt_ws
-          s24 << r26
-          if r26
-            r28 = _nt_size
-            if r28
-              r27 = r28
-            else
-              r27 = instantiate_node(SyntaxNode,input, index...index)
-            end
-            s24 << r27
-            if r27
-              r29 = _nt_ws
-              s24 << r29
-              if r29
-                r30 = _nt_name
-                s24 << r30
-                if r30
-                  r32 = _nt_size
-                  if r32
-                    r31 = r32
-                  else
-                    r31 = instantiate_node(SyntaxNode,input, index...index)
-                  end
-                  s24 << r31
-                  if r31
-                    s33, i33 = [], index
-                    loop do
-                      i34, s34 = index, []
-                      r35 = _nt_ws
-                      s34 << r35
-                      if r35
-                        if has_terminal?(",", false, index)
-                          r36 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                          @index += 1
-                        else
-                          terminal_parse_failure(",")
-                          r36 = nil
-                        end
-                        s34 << r36
-                        if r36
-                          r37 = _nt_ws
-                          s34 << r37
-                          if r37
-                            r38 = _nt_name
-                            s34 << r38
+        i11, s11 = index, []
+        if has_terminal?("assign", false, index)
+          r12 = instantiate_node(SyntaxNode,input, index...(index + 6))
+          @index += 6
+        else
+          terminal_parse_failure("assign")
+          r12 = nil
+        end
+        s11 << r12
+        if r12
+          r13 = _nt_ws
+          s11 << r13
+          if r13
+            r14 = _nt_name
+            s11 << r14
+            if r14
+              r15 = _nt_ws
+              s11 << r15
+              if r15
+                r17 = _nt_index
+                if r17
+                  r16 = r17
+                else
+                  r16 = instantiate_node(SyntaxNode,input, index...index)
+                end
+                s11 << r16
+                if r16
+                  r18 = _nt_ws
+                  s11 << r18
+                  if r18
+                    if has_terminal?("=", false, index)
+                      r19 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                      @index += 1
+                    else
+                      terminal_parse_failure("=")
+                      r19 = nil
+                    end
+                    s11 << r19
+                    if r19
+                      r20 = _nt_ws
+                      s11 << r20
+                      if r20
+                        r21 = _nt_name
+                        s11 << r21
+                        if r21
+                          r22 = _nt_ws
+                          s11 << r22
+                          if r22
+                            r24 = _nt_index
+                            if r24
+                              r23 = r24
+                            else
+                              r23 = instantiate_node(SyntaxNode,input, index...index)
+                            end
+                            s11 << r23
+                            if r23
+                              if has_terminal?(";", false, index)
+                                r25 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                                @index += 1
+                              else
+                                terminal_parse_failure(";")
+                                r25 = nil
+                              end
+                              s11 << r25
+                            end
                           end
                         end
                       end
-                      if s34.last
-                        r34 = instantiate_node(SyntaxNode,input, i34...index, s34)
-                        r34.extend(Statement4)
-                      else
-                        @index = i34
-                        r34 = nil
-                      end
-                      if r34
-                        s33 << r34
-                      else
-                        break
-                      end
-                    end
-                    r33 = instantiate_node(SyntaxNode,input, i33...index, s33)
-                    s24 << r33
-                    if r33
-                      r39 = _nt_ws
-                      s24 << r39
-                      if r39
-                        if has_terminal?(';', false, index)
-                          r40 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                          @index += 1
-                        else
-                          terminal_parse_failure(';')
-                          r40 = nil
-                        end
-                        s24 << r40
-                      end
                     end
                   end
                 end
@@ -1261,47 +1245,191 @@ module Verilog
             end
           end
         end
-        if s24.last
-          r24 = instantiate_node(SyntaxNode,input, i24...index, s24)
-          r24.extend(Statement5)
-          r24.extend(Statement6)
+        if s11.last
+          r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
+          r11.extend(Statement4)
+          r11.extend(Statement5)
         else
-          @index = i24
-          r24 = nil
+          @index = i11
+          r11 = nil
         end
-        if r24
-          r0 = r24
+        if r11
+          r0 = r11
         else
-          i41, s41 = index, []
-          r42 = _nt_expr
-          s41 << r42
-          if r42
-            r43 = _nt_ws
-            s41 << r43
-            if r43
-              if has_terminal?(';', false, index)
-                r44 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                @index += 1
-              else
-                terminal_parse_failure(';')
-                r44 = nil
+          i26, s26 = index, []
+          r27 = _nt_type
+          s26 << r27
+          if r27
+            r28 = _nt_ws
+            s26 << r28
+            if r28
+              r29 = _nt_name
+              s26 << r29
+              if r29
+                r30 = _nt_ws
+                s26 << r30
+                if r30
+                  r31 = _nt_arguments
+                  s26 << r31
+                  if r31
+                    r32 = _nt_ws
+                    s26 << r32
+                    if r32
+                      if has_terminal?(';', false, index)
+                        r33 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                        @index += 1
+                      else
+                        terminal_parse_failure(';')
+                        r33 = nil
+                      end
+                      s26 << r33
+                    end
+                  end
+                end
               end
-              s41 << r44
             end
           end
-          if s41.last
-            r41 = instantiate_node(SyntaxNode,input, i41...index, s41)
-            r41.extend(Statement7)
-            r41.extend(Statement8)
+          if s26.last
+            r26 = instantiate_node(SyntaxNode,input, i26...index, s26)
+            r26.extend(Statement6)
+            r26.extend(Statement7)
           else
-            @index = i41
-            r41 = nil
+            @index = i26
+            r26 = nil
           end
-          if r41
-            r0 = r41
+          if r26
+            r0 = r26
           else
-            @index = i0
-            r0 = nil
+            i34, s34 = index, []
+            r35 = _nt_type
+            s34 << r35
+            if r35
+              r36 = _nt_ws
+              s34 << r36
+              if r36
+                r38 = _nt_size
+                if r38
+                  r37 = r38
+                else
+                  r37 = instantiate_node(SyntaxNode,input, index...index)
+                end
+                s34 << r37
+                if r37
+                  r39 = _nt_ws
+                  s34 << r39
+                  if r39
+                    r40 = _nt_name
+                    s34 << r40
+                    if r40
+                      r42 = _nt_size
+                      if r42
+                        r41 = r42
+                      else
+                        r41 = instantiate_node(SyntaxNode,input, index...index)
+                      end
+                      s34 << r41
+                      if r41
+                        s43, i43 = [], index
+                        loop do
+                          i44, s44 = index, []
+                          r45 = _nt_ws
+                          s44 << r45
+                          if r45
+                            if has_terminal?(",", false, index)
+                              r46 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                              @index += 1
+                            else
+                              terminal_parse_failure(",")
+                              r46 = nil
+                            end
+                            s44 << r46
+                            if r46
+                              r47 = _nt_ws
+                              s44 << r47
+                              if r47
+                                r48 = _nt_name
+                                s44 << r48
+                              end
+                            end
+                          end
+                          if s44.last
+                            r44 = instantiate_node(SyntaxNode,input, i44...index, s44)
+                            r44.extend(Statement8)
+                          else
+                            @index = i44
+                            r44 = nil
+                          end
+                          if r44
+                            s43 << r44
+                          else
+                            break
+                          end
+                        end
+                        r43 = instantiate_node(SyntaxNode,input, i43...index, s43)
+                        s34 << r43
+                        if r43
+                          r49 = _nt_ws
+                          s34 << r49
+                          if r49
+                            if has_terminal?(';', false, index)
+                              r50 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                              @index += 1
+                            else
+                              terminal_parse_failure(';')
+                              r50 = nil
+                            end
+                            s34 << r50
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+            if s34.last
+              r34 = instantiate_node(SyntaxNode,input, i34...index, s34)
+              r34.extend(Statement9)
+              r34.extend(Statement10)
+            else
+              @index = i34
+              r34 = nil
+            end
+            if r34
+              r0 = r34
+            else
+              i51, s51 = index, []
+              r52 = _nt_expr
+              s51 << r52
+              if r52
+                r53 = _nt_ws
+                s51 << r53
+                if r53
+                  if has_terminal?(';', false, index)
+                    r54 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                    @index += 1
+                  else
+                    terminal_parse_failure(';')
+                    r54 = nil
+                  end
+                  s51 << r54
+                end
+              end
+              if s51.last
+                r51 = instantiate_node(SyntaxNode,input, i51...index, s51)
+                r51.extend(Statement11)
+                r51.extend(Statement12)
+              else
+                @index = i51
+                r51 = nil
+              end
+              if r51
+                r0 = r51
+              else
+                @index = i0
+                r0 = nil
+              end
+            end
           end
         end
       end

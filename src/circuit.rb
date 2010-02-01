@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-# Copyright (C) 2009 James Brown.
+# Copyright (C) 2009-2010 James Brown.
 #
 # This file is part of CWVIZ.
 #
@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with CWVIZ.  If not, see <http://www.gnu.org/licenses/>.
 
+require "circuit_module.rb"
 require "circuit_element.rb"
 require "verilog_parser.rb"
 
@@ -25,48 +26,26 @@ class Circuit
     # The circuit name
     attr_reader :name
 
+    # All of the modules
+    attr_reader :modules
+
     # Constructor
     def initialize
-        @elements = Array.new()
+        @modules = Array.new()
         @name = ""
-        @bounding_box = nil
     end
 
-    # Get the number of circuit elements
-    def num_elements
-        return @elements.size
-    end
-
-    # The bounding box of this circuit. One end is always
-    # (0,0).
-    #
-    # Returns a Hash containing values for "x" and "y"
-    def bounding_box
-        if @bounding_box.nil?
-            compute_extents
-        end
-        return @bounding_box
-    end
-
-    # Compute the extents of the bounding box of the circuit
-    def compute_extents
-        max_x = 0
-        max_y = 0
-        @elements.each { |e|
-            if (e.x + 80 > max_x)
-                max_x = e.x + 80
-            end
-            if (e.y + 200 > max_y)
-                max_y = e.y + 200
-            end
-        }
-        @bounding_box = {"x" => max_x, "y" => max_y }
-    end
-
-    # Iterate over each circuit element
+    # Iterate over each circuit module
     def each(&block)
-        @elements.each{ |e|
+        @modules.each{ |e|
             yield e
+        }
+    end
+
+    # Get a module by name
+    def module(name)
+        return @modules.find { |mod|
+            mod.name == name
         }
     end
 
@@ -100,25 +79,10 @@ class Circuit
                                    "error was #{parser.failure_reason()}")
         end
         $stderr.puts "Finished parse phase" if $verbose
-        mod = ast.modules[0]
-        $stderr.puts "Using module #{mod.module_name}" if $verbose
-        if (!root_mod.nil?)
-            mod = ast.modules.find { |m| 
-                m.module_name == root_mod
-            }
-        end
-        @name = mod.module_name
         $stderr.puts "Constructing circuit" if $verbose
-        mod.statements.each { |statement|
-            if (statement.statement_kind == :instantiation)
-                @elements.push(CircuitElement.new(statement.type,
-                                                  statement.x, statement.y,
-                                                  statement.name,
-                                                  statement.name_full))
-            end
+        ast.modules.each { |m|
+            @modules.push(CircuitModule.new(m))
         }
         $stderr.puts "Circuit constructed" if $verbose
     end
-
-    private :compute_extents
 end

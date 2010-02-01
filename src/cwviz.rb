@@ -33,6 +33,12 @@
 #   Output to file f instead of to stdout
 # -c f, --config f
 #   Use f as the YAML configuration file
+# -s f, --scot-file f
+#   Use f as the SCOT timing file. Currently only supports
+#   visualizing a *single* .out file
+# -m name, --module-name name
+#   Visualize module "name". Defaults to the first module in the file,
+#   whatever that might be
 # -v, --verbose
 #   Be verbose
 #   
@@ -46,20 +52,25 @@ $:.push(File.dirname(__FILE__))
 
 require 'circuit'
 require 'svg_controller'
+require 'scot.rb'
 
 require 'getoptlong'
 require 'rdoc/usage'
 
 config_file="#{$RESOURCE_BASE}/config.yaml"
+scot_file=nil
 out_file=nil
 real_out_file = nil
 out_type=:svg
+mod_name = nil
 $verbose=false
 
 opts = GetoptLong.new(
     [ '--help', '-h', GetoptLong::NO_ARGUMENT],
     [ '--out', '-o', GetoptLong::REQUIRED_ARGUMENT],
     [ '--config', '-c', GetoptLong::REQUIRED_ARGUMENT],
+    [ '--scot-file', '-s', GetoptLong::REQUIRED_ARGUMENT],
+    [ '--module-name', '-m', GetoptLong::REQUIRED_ARGUMENT],
     [ '--verbose', '-v', GetoptLong::NO_ARGUMENT]
 )
 
@@ -85,6 +96,10 @@ opts.each do |opt, arg|
         config_file = arg.to_s
     when '--verbose'
         $verbose = true
+    when '--scot-file'
+        scot_file = arg.to_s
+    when '--module-name'
+        mod_name = arg.to_s
     end
 end
 
@@ -95,13 +110,21 @@ end
 
 vl_file = ARGV.shift
 circuit = Circuit.new_from_verilog(vl_file)
+if (!scot_file.nil?)
+    scot = Scot.new_from_file(scot_file)
+end
 controller = SVGController.new(config_file)
 if out_file.nil?
     out = ""
 else
     out = File.new(out_file, "w")
 end
-controller.draw_circuit(circuit, out)
+mod = circuit.modules[0]
+if (!mod_name.nil?)
+    mod = circuit.module(mod_name)
+end
+puts mod
+controller.draw_circuit(mod, out)
 if out_file.nil?
     puts out
 else

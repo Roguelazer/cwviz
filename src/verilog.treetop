@@ -42,9 +42,9 @@ grammar Verilog
     rule parameters
         '(' ws first_parameter:parameter ws rest_parameters:(',' ws param:parameter)* ws ')' {
             def value
-                [first_parameter] + rest_parameters.elements.map do |field|
-                    field.param
-                end
+                return ([first_parameter] + rest_parameters.elements.map { |param_field|
+                    param_field.param
+                })
             end
         }
     end
@@ -66,11 +66,15 @@ grammar Verilog
             def name
                 return na.text_value
             end
+
+            def to_s
+                return "{Parameter: name=#{name}, type=#{type}}"
+            end
         } 
         /
         ws na:name ws {
             def type
-                return "Unknown"
+                return :unknown
             end
 
             def array?
@@ -79,6 +83,10 @@ grammar Verilog
 
             def name
                 return na.text_value
+            end
+
+            def to_s
+                return "{Untyped parameter: name=#{name}}"
             end
         }
     end
@@ -102,6 +110,26 @@ grammar Verilog
     end
 
     rule statement
+        "input" ws na:name ";" {
+            def statement_kind
+                return :input
+            end
+
+            def name
+                return na.text_value
+            end
+        }
+        /
+        "output" ws na:name ";" {
+            def statement_kind
+                return :output
+            end
+
+            def name
+                return na.text_value
+            end
+        }
+        /
         "assign" ws name ws index? ws "=" ws name ws index? ";" {
             def statement_kind
                 return :assignment
