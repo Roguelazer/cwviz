@@ -105,4 +105,17 @@ circuit_images:
       width: 80
       fill: "#ddaca8"
       height: 56
+    - type: "grayCell"
+      height: 48
+      fill: "gray"
+    - type: "blackCell"
+      height: 88
+      fill: "#232323"
+
+defaults:
+    image_type: "TextRect"
+    label: type
+    fill: "#cccccc"
+    scale_mode: none
+    width: 80
 ...
