@@ -1620,7 +1620,7 @@ module Verilog
         if (index.nil?)
             return name.text_value
         end
-        return name.text_value + "[" + index + "]"
+        return name.text_value + "[" + index.to_s + "]"
     end
   end
 
