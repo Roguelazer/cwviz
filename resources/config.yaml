@@ -89,10 +89,15 @@ circuit_images:
       image_type: "TextRect"
       width: 80
       height: 56
+    - type: "grayCell"
+      height: 48
+    - type: "blackCell"
+      height: 88
 
 defaults:
     image_type: "TextRect"
     label: type
     fill: "#cccccc"
     scale_mode: none
+    width: 80
 ...
