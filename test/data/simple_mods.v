@@ -1,7 +1,7 @@
 module First (x);
     input x;
-    CSA CSA_10_0(x);
-    CSA CSA_0_10(x);
+    CSA csa1_0_10(x);
+    CSA csa2_10_0(1'b0);
 endmodule
 
 module Second (y, z);

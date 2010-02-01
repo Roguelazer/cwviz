@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with CWVIZ.  If not, see <http://www.gnu.org/licenses/>.
 
+require "util.rb"
+
 # This class represents a single circuit element
 class CircuitElement
     # The X-coordinate of the circuit element
@@ -37,13 +39,20 @@ class CircuitElement
     # The full name of this instance
     attr_reader :name_full
 
+    attr_reader :arguments
+
     # Constructor
-    def initialize(type, x, y, name, name_full)
+    def initialize(type, x, y, name, name_full, args)
         @x = x.to_i
         @y = y.to_i
         @type = type
         @name = name
         @name_full = name_full
         @type_definition = nil
+
+        @arguments = []
+        args.each { |a|
+            @arguments.push(a.content)
+        }
     end
 end

@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with CWVIZ.  If not, see <http://www.gnu.org/licenses/>.
 
+require "set"
 require "circuit_module.rb"
 require "circuit_element.rb"
 require "verilog_parser.rb"
@@ -83,13 +84,20 @@ class Circuit
         ast.modules.each { |m|
             @modules.push(CircuitModule.new(m))
         }
+        unfound_types = Set.new()
         # Do second phase to connect subcell definitions to instances
         @modules.each { |mod|
             mod.each { |element|
                 element.type_definition = @modules.find { |m| 
                     element.type == m.name
                 }
+                if element.type_definition.nil?
+                    unfound_types.add(element.type)
+                end
             }
+        }
+        unfound_types.each { |t|
+            $stderr.puts "No definition found for cell type %s" % t if $verbose
         }
         $stderr.puts "Circuit constructed" if $verbose
     end

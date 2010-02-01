@@ -1615,6 +1615,13 @@ module Verilog
             return idx.text_value.slice(1,idx.text_value.length - 2).to_i
         end
     end
+
+    def content
+        if (index.nil?)
+            return name.text_value
+        end
+        return name.text_value + "[" + index + "]"
+    end
   end
 
   module Expr2

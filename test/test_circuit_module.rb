@@ -22,7 +22,7 @@ require "circuit.rb"
 require "circuit_module.rb"
 require "circuit_element.rb"
 
-class TestCircuit < Test::Unit::TestCase
+class TestCircuitModule < Test::Unit::TestCase
     def setup
         @sc = Circuit.new_from_verilog(File.join($DATA_BASE, "simple_mods.v"))
         @ct = Circuit.new_from_verilog(File.join($DATA_BASE, "coords.v"))
@@ -69,6 +69,16 @@ class TestCircuit < Test::Unit::TestCase
         @first.each { |element|
             assert_instance_of(CircuitModule, element.type_definition)
             assert_equal("CSA", element.type_definition.name)
+        }
+    end
+
+    def test_arguments
+        @first.each { |element|
+            if (element.name == "csa1")
+                assert_equal(["x"], element.arguments)
+            elsif (element.name == "csa2")
+                assert_equal(["1'b0"], element.arguments)
+            end
         }
     end
 end
