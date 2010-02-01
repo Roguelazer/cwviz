@@ -127,9 +127,9 @@ class VerilogSizes
                             @sizes[name] = size
                         end
                         if(!@sizes.has_key?(name) or @sizes[name].nil?)
-                            $stderr.puts "Can't resolve #{name}; trying again."
-                            $stderr.puts "In the future, I appreciate it if you define"
-                            $stderr.puts "things before you use them"
+                            $stderr.puts "Can't resolve #{name}; trying again." if ($verbose)
+                            $stderr.puts "In the future, I appreciate it if you define" if ($verbose)
+                            $stderr.puts "things before you use them" if ($verbose)
                             complete = false
                         end
                     end
