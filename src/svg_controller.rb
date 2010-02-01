@@ -104,7 +104,7 @@ class SVGController
     # Arguments
     # file_name:: The path to a configuration file
     # autosize:: Either false or the path to a verilog file
-    def initialize(file_name, autosize)
+    def initialize(file_name, autosize=false)
         load_from_yaml(YAML.load_file(file_name))
         if autosize != false
             vl = VerilogSizes.new(autosize)

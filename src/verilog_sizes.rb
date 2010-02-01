@@ -102,43 +102,43 @@ class VerilogSizes
     end
 
     def load_sizes_from_verilog()
-        File.open(@filename, "r") { |f|
-            # AAGH
-            # This code is ugly
-            # We need to iterate until we clear up all of the used names,
-            # since they're not necessarily defined before used
-            # UGLY
-            # UGLY 
-            # UGLY!
-            while(true)
-                complete = true
-                f.rewind()
-                f.each do |l|
-                    if (l =~ /<\s*size\((\w+)\)\s*=\s*(\d+)\s*>/)
-                        @sizes[$1] = $2.to_i
-                    elsif (l =~ /<\s*size\((\w+)\)\s*=\s*([^\s][^>]+)\s*>/) 
-                        name = $1
-                        if (@sizes.has_key?(name))
-                            next
-                        end
-                        catch :failure do
-                            tokens = tokenize($2)
-                            size = parse_expr(tokens)[0]
-                            @sizes[name] = size
-                        end
-                        if(!@sizes.has_key?(name) or @sizes[name].nil?)
-                            $stderr.puts "Can't resolve #{name}; trying again." if ($verbose)
-                            $stderr.puts "In the future, I appreciate it if you define" if ($verbose)
-                            $stderr.puts "things before you use them" if ($verbose)
-                            complete = false
-                        end
+        f = File.open(@filename, "r")
+        lines = f.readlines
+        f.close()
+        # AAGH
+        # This code is ugly
+        # We need to iterate until we clear up all of the used names,
+        # since they're not necessarily defined before used
+        # UGLY
+        # UGLY 
+        # UGLY!
+        while(true)
+            complete = true
+            lines.each do |l|
+                if (l =~ /<\s*size\((\w+)\)\s*=\s*(\d+)\s*>/)
+                    @sizes[$1] = $2.to_i
+                elsif (l =~ /<\s*size\((\w+)\)\s*=\s*([^\s][^>]+)\s*>/) 
+                    name = $1
+                    if (@sizes.has_key?(name))
+                        next
+                    end
+                    catch :failure do
+                        tokens = tokenize($2)
+                        size = parse_expr(tokens)[0]
+                        @sizes[name] = size
+                    end
+                    if(!@sizes.has_key?(name) or @sizes[name].nil?)
+                        $stderr.puts "Can't resolve #{name}; trying again." if ($verbose)
+                        $stderr.puts "In the future, I appreciate it if you define" if ($verbose)
+                        $stderr.puts "things before you use them" if ($verbose)
+                        complete = false
                     end
                 end
-                if (complete == true)
-                    break
-                end
             end
-        }
+            if (complete == true)
+                break
+            end
+        end
     end
     
     private :parse_expr, :parse_factor, :parse_aexp, :tokenize

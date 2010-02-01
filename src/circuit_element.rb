@@ -51,8 +51,28 @@ class CircuitElement
         @type_definition = nil
 
         @arguments = []
+        @argio = nil
         args.each { |a|
             @arguments.push(a.content)
         }
     end
+
+    # Get the input/output status of the arguments
+    def argio(n)
+        if (@argio.nil?)
+            compute_argio()
+        end
+        return @argio[n]
+    end
+
+    def compute_argio
+        if @type_definition.nil?
+            @argio = []
+        end
+        0.upto(@arguments.length) { |n|
+            @argio.push(@type_definition.param_type(n))
+        }
+    end
+
+    private :compute_argio
 end
