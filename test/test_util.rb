@@ -30,5 +30,6 @@ class TestUtil < Test::Unit::TestCase
         assert_equal(10, Util.verilog_to_number("4'b1010"))
         assert_equal(2, Util.verilog_to_number("2'b1010"))
         assert_equal(105, Util.verilog_to_number("3'd105"))
+        assert_equal(15, Util.verilog_to_number("'hf"))
     end
 end

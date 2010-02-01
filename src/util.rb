@@ -20,7 +20,7 @@
 
 class Util
     @@normal_number = Regexp.compile(/^\d+$/)
-    @@base_number = Regexp.compile(/^(\d)*'(b|h)([01]*)$/)
+    @@base_number = Regexp.compile(/^(\d)*'(b|h|d)([0-9A-Fa-f]*)$/)
 
     # Convert verilog representations of numbers to native Ruby ones
     def self.verilog_to_number(verilog)
@@ -34,14 +34,13 @@ class Util
             if (len != 0 and len < data.length)
                 data.slice!(-len..-1)
             end
-            base = (if $2 == 'b'
-                'b'
-            elsif $2 == 'h'
+            base = (if $2 == 'h'
                 'x'
+            else
+                $2
             end)
             num = Integer('0' + base + data)
             return num
         end
-        raise Error
     end
 end
