@@ -16,7 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with CWVIZ.  If not, see <http://www.gnu.org/licenses/>.
 
+
 class VerilogSizes
+    # maximum number of iterations
+    MAX_ITER=15
+
     attr_reader :sizes
 
     def initialize(filename)
@@ -110,7 +114,9 @@ class VerilogSizes
             # UGLY
             # UGLY 
             # UGLY!
+            iters = 0
             while(true)
+                iters += 1
                 complete = true
                 f.rewind()
                 f.each do |l|
@@ -131,6 +137,11 @@ class VerilogSizes
                             $stderr.puts "In the future, I appreciate it if you define" if ($verbose)
                             $stderr.puts "things before you use them" if ($verbose)
                             complete = false
+                            if (iters > MAX_ITER)
+                                $stderr.puts "Could not resolve cell #{name} in verilog sizes; giving up"
+                                @sizes.delete(name)
+                                return
+                            end
                         end
                     end
                 end
