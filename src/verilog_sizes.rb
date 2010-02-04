@@ -19,6 +19,9 @@
 require "jcode"
 
 class VerilogSizes
+    # Maximum number of iterations when parsing
+    MAX_ITERS=15
+
     attr_reader :sizes
 
     def initialize(filename)
@@ -107,6 +110,7 @@ class VerilogSizes
         f = File.open(@filename, "r")
         lines = f.readlines
         f.close()
+        iters = 0
         # AAGH
         # This code is ugly
         # We need to iterate until we clear up all of the used names,
@@ -115,6 +119,7 @@ class VerilogSizes
         # UGLY 
         # UGLY!
         while(true)
+            iters += 1
             complete = true
             lines.each do |l|
                 if (l =~ /<\s*size\((\w+)\)\s*=\s*(\d+)\s*>/)
@@ -134,6 +139,11 @@ class VerilogSizes
                         $stderr.puts "In the future, I appreciate it if you define" if ($verbose)
                         $stderr.puts "things before you use them" if ($verbose)
                         complete = false
+                        if (iters > MAX_ITERS)
+                            $stderr.puts "Could not resolve cell #{name} in verilog sizes; giving up    "
+                            @sizes.delete(name)
+                            return
+                        end
                     end
                 end
             end
