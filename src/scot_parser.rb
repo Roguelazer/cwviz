@@ -48,10 +48,14 @@ class ScotParser
                 end
                 if (not @elements.has_key?(name))
                     @elements[name] = Hash.new
+                    @elements[name]["Tlatest"] = 0.0
                 end
                 @elements[name]["Trise"] = time
                 if (time > @latest_time)
                     @latest_time = time
+                end
+                if (time > @elements[name]["Tlatest"])
+                    @elements[name]["Tlatest"] = time
                 end
             elsif (md = @@tfall_signal_regexp.match(line))
                 name = md[1]
@@ -61,10 +65,14 @@ class ScotParser
                 end
                 if (not @elements.has_key?(name))
                     @elements[name] = Hash.new
+                    @elements[name]["Tlatest"] = 0.0
                 end
                 @elements[name]["Tfall"] = time
                 if (time > @latest_time)
                     @latest_time = time
+                end
+                if (time > @elements[name]["Tlatest"])
+                    @elements[name]["Tlatest"] = time
                 end
             end
         end
@@ -76,7 +84,3 @@ class ScotParser
         }
     end
 end
-
-s = ScotParser.new
-s.parse(ARGV[0])
-puts "Latest time was #{s.latest_time}"

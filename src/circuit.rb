@@ -50,6 +50,11 @@ class Circuit
         }
     end
 
+    # Alias for module
+    def [](name)
+        return self.module(name)
+    end
+
     # Create a new Circuit object from a Verilog file
     #
     # Arguments:

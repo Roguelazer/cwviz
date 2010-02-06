@@ -54,6 +54,7 @@
 $:.push(File.dirname(__FILE__))
 
 require 'circuit'
+require 'scot'
 require 'svg_controller'
 
 require 'getoptlong'
@@ -119,9 +120,6 @@ if autosize
     autosize=vl_file
 end
 circuit = Circuit.new_from_verilog(vl_file)
-if (!scot_file.nil?)
-    scot = Scot.new_from_file(scot_file)
-end
 controller = SVGController.new(config_file, autosize)
 if out_file.nil?
     out = ""
@@ -131,6 +129,12 @@ end
 mod = circuit.modules[0]
 if (!mod_name.nil?)
     mod = circuit.module(mod_name)
+end
+if (not scot_file.nil?)
+    puts "Loading SCOT data" if ($verbose)
+    s = Scot.new(scot_file)
+    puts "Normalizing to time of #{s.latest_time}" if ($verbose)
+    s.annotate(mod)
 end
 puts "About to visualize %s" % mod if ($verbose)
 controller.draw_circuit(mod, out)
