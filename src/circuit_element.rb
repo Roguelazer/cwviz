@@ -39,7 +39,12 @@ class CircuitElement
     # The full name of this instance
     attr_reader :name_full
 
+    # The arguments to this circuit element
     attr_reader :arguments
+
+    # A hash of options that will be passed to the drawing controller for
+    # this circuit element
+    attr_reader :opts
 
     # Constructor
     def initialize(type, x, y, name, name_full, args)

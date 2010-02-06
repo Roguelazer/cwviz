@@ -60,7 +60,8 @@ class SVGController
         # x:: The x-coordinate to draw at
         # y:: The y-coordinate to draw at
         # ele:: The CircuitElement to draw
-        def svg(x, y, ele)
+        # extra_opts:: Extra options for this particular instance
+        def svg(x, y, ele, extra_opts = {})
             optmap = {
                 "fill" => :fill,
                 "stroke" => :stroke,
@@ -72,6 +73,9 @@ class SVGController
             optmap.each { |k, v|
                 if @ci[k]
                     options[v] = @ci[k]
+                end
+                if extra_opts[k]
+                    options[v] = extra_opts[k]
                 end
             }
             options[:text] = case @ci["label"]
@@ -173,7 +177,7 @@ class SVGController
             end
             real_x = max_x - circuit_element.x - im.width
             real_y = circuit_element.y
-            svg = im.svg(real_x, real_y, circuit_element)
+            svg = im.svg(real_x, real_y, circuit_element, circuit_element.opts)
             drawer.add_element(svg)
         }
         io = drawer.write(io)
