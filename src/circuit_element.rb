@@ -60,6 +60,8 @@ class CircuitElement
         args.each { |a|
             @arguments.push(a.content)
         }
+
+        @opts = Hash.new
     end
 
     # Get the input/output status of the arguments
