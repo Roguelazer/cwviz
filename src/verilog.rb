@@ -981,7 +981,7 @@ module Verilog
             @name = $1.to_s
         else
             @coords = [0,0]
-            @name = ""
+            @name = na.text_value
         end
     end
 

@@ -19,13 +19,8 @@
 require 'scot_parser.rb'
 
 class Scot
-    def self.new_from_file(file_path)
-        s = Scot.new
-        s.parse(file_path)
-        return s
-    end
-
-    def parse(filename)
-        @elems = ScotParser.parse(filename)
+    def initialize(file_path)
+        @sp = ScotParser.new(file_path)
+        @sp.parse
     end
 end

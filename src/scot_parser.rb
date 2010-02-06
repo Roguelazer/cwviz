@@ -22,21 +22,61 @@ class ScotElement
 end
 
 class ScotParser
-    @@trise_regexp = /^(?!X|mean|MEAN)([^\.\s]*)\.Trise\s+((?:\d|\.|e|-)+)/x
+    @@trise_signal_regexp = /^(?!X|mean|MEAN)([^\.\s]*)\.Trise\s+((?:\d|\.|e|-)+)/x
+    @@tfall_signal_regexp = /^(?!X|mean|MEAN)([^\.\s]*)\.Tfall\s+((?:\d|\.|e|-)+)/x
+    @@renaming_regexp = /^(.+)_(\d+)/
+
+    attr_reader :elements, :latest_time
+
+    def initialize
+        @elements = Hash.new
+        @latest_time = 0.0
+    end
 
     # Parse a single file
-    def self.parse(filename)
+    def parse(filename)
         f = File.open(filename, "r")
         lines = f.readlines()
         f.close()
         elements = Hash.new
         lines.each do |line|
-            if (md = @@trise_regexp.match(line))
-                puts "Element = %s" % md[1]
-                puts "Rise time = %f" % md[2].to_f
+            if (md = @@trise_signal_regexp.match(line))
+                name = md[1]
+                time = md[2].to_f
+                if (md2 = @@renaming_regexp.match(md[1]))
+                    name = md2[1] + "[" + md2[2] + "]"
+                end
+                if (not @elements.has_key?(name))
+                    @elements[name] = Hash.new
+                end
+                @elements[name]["Trise"] = time
+                if (time > @latest_time)
+                    @latest_time = time
+                end
+            elsif (md = @@tfall_signal_regexp.match(line))
+                name = md[1]
+                time = md[2].to_f
+                if (md2 = @@renaming_regexp.match(md[1]))
+                    name = md2[1] + "[" + md2[2] + "]"
+                end
+                if (not @elements.has_key?(name))
+                    @elements[name] = Hash.new
+                end
+                @elements[name]["Tfall"] = time
+                if (time > @latest_time)
+                    @latest_time = time
+                end
             end
         end
     end
+
+    def print_elements
+        @elements.each { |k, v|
+            puts "#{k}: rise=#{v['Trise']}, fall=#{v['Tfall']}"
+        }
+    end
 end
 
-ScotParser.parse(ARGV[0])
+s = ScotParser.new
+s.parse(ARGV[0])
+puts "Latest time was #{s.latest_time}"

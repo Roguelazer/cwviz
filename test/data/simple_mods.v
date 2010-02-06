@@ -18,3 +18,18 @@ module CSA(item);
 
     // Do nothing! Woo!
 endmodule
+
+module Third;
+    wire [7:0] x;
+    wire [3:0] y;
+    and2 a00(x[0], x[1], y[0]);
+    and2 a01(x[2], x[3], y[1]);
+    and2 a02(x[4], x[5], y[2]);
+    and2 a03(x[6], x[7], y[3]);
+endmodule
+
+module and2(x0, x1, y);
+    input x0;
+    input x1;
+    output y;
+endmodule

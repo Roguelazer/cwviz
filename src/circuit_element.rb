@@ -65,6 +65,8 @@ class CircuitElement
     end
 
     # Get the input/output status of the arguments
+    #
+    # n:: 0-based index of argument
     def argio(n)
         if (@argio.nil?)
             compute_argio()
@@ -73,8 +75,9 @@ class CircuitElement
     end
 
     def compute_argio
+        @argio = []
         if @type_definition.nil?
-            @argio = []
+            return
         end
         0.upto(@arguments.length) { |n|
             @argio.push(@type_definition.param_type(n))

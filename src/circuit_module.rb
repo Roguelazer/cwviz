@@ -97,6 +97,13 @@ class CircuitModule
         }
     end
 
+    # Get a circuit element by name
+    def [](name)
+        return @elements.find { |e|
+            e.name == name
+        }
+    end
+
     # Constructor
     #
     # Arguments

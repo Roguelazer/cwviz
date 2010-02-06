@@ -28,6 +28,7 @@ class TestCircuitModule < Test::Unit::TestCase
         @ct = Circuit.new_from_verilog(File.join($DATA_BASE, "coords.v"))
         @first = @sc.module("First")
         @second = @sc.module("Second")
+        @third = @sc.module("Third")
     end
 
     def test_inputs_outputs
@@ -47,6 +48,7 @@ class TestCircuitModule < Test::Unit::TestCase
     def test_instantiations
         assert_equal(2, @first.num_elements)
         assert_equal(3, @second.num_elements)
+        assert_equal(4, @third.num_elements)
     end
 
     def test_bounding_box
@@ -72,6 +74,12 @@ class TestCircuitModule < Test::Unit::TestCase
         }
     end
 
+    def test_select
+        assert_not_nil(@first["csa1"])
+        assert_nil(@first["cas1"])
+        assert_not_nil(@first["csa2"])
+    end
+
     def test_arguments
         @first.each { |element|
             if (element.name == "csa1")
@@ -80,5 +88,12 @@ class TestCircuitModule < Test::Unit::TestCase
                 assert_equal(["1'b0"], element.arguments)
             end
         }
+        assert_equal(3, @third["a00"].arguments.length)
+        assert_equal(3, @third["a01"].arguments.length)
+        assert_equal(3, @third["a02"].arguments.length)
+        assert_equal(3, @third["a03"].arguments.length)
+        assert_equal(:input, @third["a00"].argio(0))
+        assert_equal(:input, @third["a00"].argio(1))
+        assert_equal(:output, @third["a00"].argio(2))
     end
 end
