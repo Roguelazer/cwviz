@@ -24,7 +24,7 @@ end
 class ScotParser
     @@trise_signal_regexp = /^(?!X|mean|MEAN)([^\.\s]*)\.Trise\s+((?:\d|\.|e|-)+)/x
     @@tfall_signal_regexp = /^(?!X|mean|MEAN)([^\.\s]*)\.Tfall\s+((?:\d|\.|e|-)+)/x
-    @@renaming_regexp = /^(.+)_(\d+)/
+    @@renaming_regexp = /^(.+)_(\d+)$/
 
     attr_reader :elements, :latest_time
 
@@ -42,6 +42,7 @@ class ScotParser
         lines.each do |line|
             if (md = @@trise_signal_regexp.match(line))
                 name = md[1]
+                orig_name = name
                 time = md[2].to_f
                 if (md2 = @@renaming_regexp.match(md[1]))
                     name = md2[1] + "[" + md2[2] + "]"
@@ -57,8 +58,10 @@ class ScotParser
                 if (time > @elements[name]["Tlatest"])
                     @elements[name]["Tlatest"] = time
                 end
+                @elements[name]["orig_name"]=orig_name
             elsif (md = @@tfall_signal_regexp.match(line))
                 name = md[1]
+                orig_name = name
                 time = md[2].to_f
                 if (md2 = @@renaming_regexp.match(md[1]))
                     name = md2[1] + "[" + md2[2] + "]"
@@ -74,6 +77,7 @@ class ScotParser
                 if (time > @elements[name]["Tlatest"])
                     @elements[name]["Tlatest"] = time
                 end
+                @elements[name]["orig_name"]=orig_name
             end
         end
     end

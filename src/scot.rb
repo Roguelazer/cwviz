@@ -56,6 +56,14 @@ class Scot
                     if (t > latest_time)
                         latest_time = t
                     end
+                elsif (e = @sp.elements.find { |k,v|  v["orig_name"] == arg }[1])
+                    # Normalize the times
+                    t = e["Tlatest"] / @latest_time
+                    if (t > latest_time)
+                        latest_time = t
+                    end
+                else
+                    puts "Could not find arg #{arg} for element #{element.name}"
                 end
             }
             if (latest_time > 0)
