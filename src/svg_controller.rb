@@ -96,7 +96,6 @@ class SVGController
             when "svg"
                 SVG::Image.new(x, y, @width, @height, @file_name, options)
             when "textrect"
-                @ci["label"] = "type"
                 SVG::Rect.new(x, y, @width, @height, options)
             end
             return obj
@@ -154,7 +153,8 @@ class SVGController
                                                           opts["image"],
                                                           opts["width"],
                                                           opts["height"],
-                                                          opts["type"])
+                                                          opts["type"],
+                                                          global_options)
         end
     end
 

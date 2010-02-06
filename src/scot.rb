@@ -49,7 +49,7 @@ class Scot
     def annotate(circuit)
         circuit.each { |element|
             latest_time = -1.0
-            element.arguments.each { |arg|
+            element.each_output { |arg|
                 if @sp.elements.has_key?(arg)
                     # Normalize the times
                     t = @sp.elements[arg]["Tlatest"] / @latest_time
@@ -64,6 +64,7 @@ class Scot
                     end
                 else
                     puts "Could not find arg #{arg} for element #{element.name}"
+                    next
                 end
             }
             if (latest_time > 0)

@@ -74,6 +74,14 @@ class CircuitElement
         return @argio[n]
     end
 
+    def each_output
+        0.upto(@arguments.length) { |i|
+            if (self.argio(i) == :output)
+                yield @arguments[i]
+            end
+        }
+    end
+
     def compute_argio
         @argio = []
         if @type_definition.nil?
