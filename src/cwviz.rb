@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-# cwviz v0.4
+# cwviz v0.41
 #
 # Copyright (C) 2009-2010 James Brown <jbrown@cs.hmc.edu>.
 #
@@ -20,8 +20,8 @@
 #
 # == Synopsis
 #
-# cwviz: Visualize a gate-level circuit; in the future, will support
-# including both timing and structural data
+# cwviz: Visualize a gate-level circuit; also supports annotation
+# with SCOT delay information
 #
 # == Usage
 #
