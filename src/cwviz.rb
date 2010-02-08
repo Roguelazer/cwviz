@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-# cwviz v0.41
+# cwviz v0.42
 #
 # Copyright (C) 2009-2010 James Brown <jbrown@cs.hmc.edu>.
 #
