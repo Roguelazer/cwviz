@@ -223,6 +223,10 @@ class SVGController
                 end
             }
         }
+        # Clean up the list. Why, yes, it is ugly. :-(
+        retval.delete_if { |x,y|
+            x.name_full > y.name_full
+        }
         return retval
     end
 
