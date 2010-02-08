@@ -161,7 +161,7 @@ class SVGController
     # Draw a circuit to an IO stream
     #
     # Arguments:
-    # circuit:: The Circuit to draw
+    # circuit:: The CircuitModule to draw
     # io: an IO object to draw to
     def draw_circuit(circuit, io)
         $stderr.puts "Beginning draw phase" if $verbose
@@ -185,5 +185,65 @@ class SVGController
         return io
     end
 
-    private :load_from_yaml
+    # Check for overlapping elements. This function doesn't really belong
+    # here, but I don't feel like rearchitecting to put the geometry data
+    # into Circuit, where it probably belongs, so this gets to live here.
+    #
+    # Woo.
+    #
+    # Arguments:
+    # circuit:: The CircuitModule to check
+    #
+    # Returns:
+    # A list of pairs of circuit elements that overlap
+    def check_overlap(circuit)
+        retval = []
+        circuit.each { |circuit_element_1|
+            im1 = nil
+            if @circuit_images.has_key?(circuit_element_1.type.downcase())
+                im1 = @circuit_images[circuit_element_1.type.downcase()]
+            else
+                im1 = @circuit_images["default"]
+            end
+            circuit.each { |circuit_element_2|
+                if (circuit_element_1 == circuit_element_2)
+                    next
+                end
+                im2 = nil
+                if @circuit_images.has_key?(circuit_element_2.type.downcase())
+                    im2 = @circuit_images[circuit_element_2.type.downcase()]
+                else
+                    im2 = @circuit_images["default"]
+                end
+                if (compare_overlap(circuit_element_1.x, circuit_element_1.y,
+                                    im1.width, im1.height,
+                                    circuit_element_2.x, circuit_element_2.y,
+                                    im2.width, im2.height))
+                    retval.push([circuit_element_1, circuit_element_2])
+                end
+            }
+        }
+        return retval
+    end
+
+    def compare_overlap(x1, y1, w1, h1, x2, y2, w2, h2)
+        x11 = x1
+        y11 = y1
+        x12 = x1 + w1
+        y12 = y1 + h1
+        x21 = x2
+        y21 = y2
+        x22 = x2 + w2
+        y22 = y2 + h2
+        c1 = x11 < x22
+        c2 = x12 > x21
+        c3 = y11 < y22
+        c4 = y12 > y21
+        if (c1 && c2 && c3 && c4)
+            return true
+        end
+        return false
+    end
+
+    private :load_from_yaml, :compare_overlap
 end

@@ -39,11 +39,13 @@
 # -m name, --module-name name
 #   Visualize module "name". Defaults to the first module in the file,
 #   whatever that might be
-# -v, --verbose
-#   Be verbose
 # -a, --autosize
 #   Automatically determine sizes by reading comments in the verilog
 #   argument
+# -l, --check-overlap
+#   Check for overlap in cells
+# -v, --verbose
+#   Be verbose
 #   
 # == Dependencies
 #
@@ -67,6 +69,7 @@ real_out_file = nil
 out_type=:svg
 mod_name = nil
 autosize=false
+check_overlap=false
 $verbose=false
 
 opts = GetoptLong.new(
@@ -76,6 +79,7 @@ opts = GetoptLong.new(
     [ '--scot-file', '-s', GetoptLong::REQUIRED_ARGUMENT],
     [ '--module-name', '-m', GetoptLong::REQUIRED_ARGUMENT],
     [ '--autosize', '-a', GetoptLong::NO_ARGUMENT],
+    [ '--check-overlap', '-l', GetoptLong::NO_ARGUMENT],
     [ '--verbose', '-v', GetoptLong::NO_ARGUMENT]
 )
 
@@ -107,6 +111,8 @@ opts.each do |opt, arg|
         mod_name = arg.to_s
     when '--autosize'
         autosize = true
+    when '--check-overlap'
+        check_overlap = true
     end
 end
 
@@ -135,6 +141,12 @@ if (not scot_file.nil?)
     s = Scot.new(scot_file)
     puts "Normalizing to time of #{s.latest_time}" if ($verbose)
     s.annotate(mod)
+end
+if (check_overlap)
+    puts "Checking overlap" if ($verbose)
+    controller.check_overlap(mod).each { |mod1, mod2|
+        puts "Overlap between #{mod1.name_full} and #{mod2.name_full}"
+    }
 end
 puts "About to visualize %s" % mod if ($verbose)
 controller.draw_circuit(mod, out)
