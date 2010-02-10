@@ -20,7 +20,7 @@ endmodule
 module buffer(in, out);
     input in;
     output out;
-endmodule;
+endmodule
 
 module and2(a, b, c);
     input a;
