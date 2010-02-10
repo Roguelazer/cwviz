@@ -1,2 +1,8 @@
+z_1.Trise   0.0
+z_2.Trise   0.5
 z_3.Tfall   1.0
 z_4.Tfall   5.0e-1
+
+y_1.Trise   0.0
+y_2.Trise   0.0
+y_3.Tfall   2.0

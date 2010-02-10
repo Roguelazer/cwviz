@@ -39,26 +39,45 @@ class Scot
     def initialize(file_path)
         @sp = ScotParser.new
         @sp.parse(file_path)
-        @latest_time = @sp.latest_time
+        @latest_time = -1.0
+        @slowest_time = -1.0
     end
 
     # Annotate a circuit with scot information. Currently, only does
     # relative delays using output information
     #
     # circuit:: A circuit module to annotate
-    def annotate(circuit)
+    # absolute_delay:: Use absolute instead of relative delay (e.g., use
+    # the actual processing time taken per-element instead of the signal
+    # time. Confusing terminology, I know)
+    def annotate(circuit, absolute_delay=false)
         circuit.each { |element|
             latest_time = -1.0
+            earliest_time = 1.0/0 # Infinity. Should be a builtin, but isn't.
+            element.each_input { |arg|
+                if @sp.elements.has_key?(arg)
+                    t = @sp.elements[arg]["Tlatest"]
+                    if (t < earliest_time)
+                        earliest_time = t
+                    end
+                elsif (e = @sp.elements.find { |k,v|  v["orig_name"] == arg })
+                    t = e[1]["Tlatest"]
+                    if (t < earliest_time)
+                        earliest_time = t
+                    end
+                else
+                    puts "Could not find arg #{arg} for element #{element.name}"
+                    next
+                end
+            }
             element.each_output { |arg|
                 if @sp.elements.has_key?(arg)
-                    # Normalize the times
-                    t = @sp.elements[arg]["Tlatest"] / @latest_time
+                    t = @sp.elements[arg]["Tlatest"]
                     if (t > latest_time)
                         latest_time = t
                     end
                 elsif (e = @sp.elements.find { |k,v|  v["orig_name"] == arg })
-                    # Normalize the times
-                    t = e[1]["Tlatest"] / @latest_time
+                    t = e[1]["Tlatest"]
                     if (t > latest_time)
                         latest_time = t
                     end
@@ -67,8 +86,27 @@ class Scot
                     next
                 end
             }
-            if (latest_time > 0)
-                element.opts["fill"] = HeatColor.color_string(latest_time)
+            element.props["Tout"] = latest_time
+            element.props["Tin"] = earliest_time
+            element.props["Tdelta"] = latest_time - earliest_time
+        }
+        circuit.each { |element|
+            if (element.props["Tdelta"] > @slowest_time)
+                @slowest_time = element.props["Tdelta"]
+            end
+            if (element.props["Tout"] > @latest_time)
+                @latest_time = element.props["Tout"]
+            end
+            if (element.props["Tin"] > @latest_time)
+                @latest_time = element.props["Tin"]
+            end
+        }
+        # Actually annotate the opts
+        circuit.each { |element|
+            if absolute_delay
+                element.opts["fill"] = HeatColor.color_string(element.props["Tdelta"] / @slowest_time)
+            else
+                element.opts["fill"] = HeatColor.color_string(element.props["Tout"] / @latest_time)
             end
         }
     end

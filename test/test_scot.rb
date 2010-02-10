@@ -33,8 +33,24 @@ class TestScot < Test::Unit::TestCase
     def test_annotate
         circuit = Circuit.new_from_verilog(File.join($DATA_BASE, "simple_scot.v"))
         s = Scot.new(File.join($DATA_BASE, "simple_scot.out"))
-        s.annotate(circuit["First"])
+        s.annotate(circuit["First"], false)
         assert_equal("#ff0000", circuit["First"]["a00"].opts["fill"])
         assert_equal("#7f007f", circuit["First"]["a01"].opts["fill"])
+    end
+
+    def test_absolute_annotate
+        circuit = Circuit.new_from_verilog(File.join($DATA_BASE, "simple_scot.v"))["First"]
+        s = Scot.new(File.join($DATA_BASE, "simple_scot.out"))
+        s.annotate(circuit, true)
+        assert_equal("#ff0000", circuit["a00"].opts["fill"])
+        assert_equal("#7f007f", circuit["a01"].opts["fill"])
+    end
+
+    def test_all_same_absolute_annotate
+        circuit = Circuit.new_from_verilog(File.join($DATA_BASE, "simple_scot.v"))["Second"]
+        s = Scot.new(File.join($DATA_BASE, "simple_scot.out"))
+        s.annotate(circuit, true)
+        assert_equal("#ff0000", circuit["a00"].opts["fill"])
+        assert_equal("#ff0000", circuit["a01"].opts["fill"])
     end
 end

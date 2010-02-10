@@ -44,7 +44,10 @@ class CircuitElement
 
     # A hash of options that will be passed to the drawing controller for
     # this circuit element
-    attr_reader :opts
+    attr_accessor :opts
+
+    # Extra properties. A hash. Do what you want to it...
+    attr_accessor :props
 
     # Constructor
     def initialize(type, x, y, name, name_full, args)
@@ -62,6 +65,7 @@ class CircuitElement
         }
 
         @opts = Hash.new
+        @props = Hash.new
     end
 
     # Get the input/output status of the arguments
@@ -74,9 +78,21 @@ class CircuitElement
         return @argio[n]
     end
 
+    # Yields the argument to the block
+    # for each output of this element
     def each_output
         0.upto(@arguments.length) { |i|
             if (self.argio(i) == :output)
+                yield @arguments[i]
+            end
+        }
+    end
+
+    # Yields the argument to the block
+    # for each input of this element
+    def each_input
+        0.upto(@arguments.length) { |i|
+            if (self.argio(i) == :input)
                 yield @arguments[i]
             end
         }
