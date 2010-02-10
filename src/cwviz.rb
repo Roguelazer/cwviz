@@ -36,6 +36,8 @@
 # -s f, --scot-file f
 #   Use f as the SCOT timing file. Currently only supports
 #   visualizing a *single* .out file
+# -b, --absolute-delay
+#   Use absolute scot delays (per-cell)
 # -m name, --module-name name
 #   Visualize module "name". Defaults to the first module in the file,
 #   whatever that might be
@@ -70,6 +72,7 @@ out_type=:svg
 mod_name = nil
 autosize=false
 check_overlap=false
+absolute_delay=false
 $verbose=false
 
 opts = GetoptLong.new(
@@ -79,6 +82,7 @@ opts = GetoptLong.new(
     [ '--scot-file', '-s', GetoptLong::REQUIRED_ARGUMENT],
     [ '--module-name', '-m', GetoptLong::REQUIRED_ARGUMENT],
     [ '--autosize', '-a', GetoptLong::NO_ARGUMENT],
+    [ '--absolute-delay', '-b', GetoptLong::NO_ARGUMENT],
     [ '--check-overlap', '-l', GetoptLong::NO_ARGUMENT],
     [ '--verbose', '-v', GetoptLong::NO_ARGUMENT]
 )
@@ -111,6 +115,8 @@ opts.each do |opt, arg|
         mod_name = arg.to_s
     when '--autosize'
         autosize = true
+    when '--absolute-delay'
+        absolute_delay = true
     when '--check-overlap'
         check_overlap = true
     end
@@ -140,7 +146,7 @@ if (not scot_file.nil?)
     puts "Loading SCOT data" if ($verbose)
     s = Scot.new(scot_file)
     puts "Normalizing to time of #{s.latest_time}" if ($verbose)
-    s.annotate(mod)
+    s.annotate(mod, absolute_delay)
 end
 if (check_overlap)
     puts "Checking overlap" if ($verbose)
