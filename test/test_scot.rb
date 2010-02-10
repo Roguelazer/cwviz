@@ -53,4 +53,18 @@ class TestScot < Test::Unit::TestCase
         assert_equal("#ff0000", circuit["a00"].opts["fill"])
         assert_equal("#ff0000", circuit["a01"].opts["fill"])
     end
+
+    def test_feed_annotate
+        circuit = Circuit.new_from_verilog(File.join($DATA_BASE, "simple_scot.v"))["Third"]
+        s = Scot.new(File.join($DATA_BASE, "simple_scot.out"))
+        s.annotate(circuit, true)
+        assert_equal(0.5, circuit["b0"].props["Tdelta"])
+        assert_equal(0.5, circuit["b1"].props["Tdelta"])
+        assert_equal(0.5, circuit["b2"].props["Tdelta"])
+        assert_equal(0.5, circuit["b3"].props["Tdelta"])
+        assert_equal(0.5, circuit["b0"].props["Tout"])
+        assert_equal(1.0, circuit["b1"].props["Tout"])
+        assert_equal(1.5, circuit["b2"].props["Tout"])
+        assert_equal(2.0, circuit["b3"].props["Tout"])
+    end
 end

@@ -13,8 +13,11 @@ module Second;
 endmodule
 
 module Third;
-    wire y[4:0];
-
+    wire x[4:0];
+    buffer b0(x[0], x[1]);
+    buffer b1(x[1], x[2]);
+    buffer b2(x[2], x[3]);
+    buffer b3(x[3], x[4]);
 endmodule
 
 module buffer(in, out);

@@ -6,3 +6,9 @@ z_4.Tfall   5.0e-1
 y_1.Trise   0.0
 y_2.Trise   0.0
 y_3.Tfall   2.0
+
+x_0.Trise   0.0
+x_1.Trise   0.5
+x_2.Trise   1.0
+x_3.Trise   1.5
+x_4.Trise   2.0
