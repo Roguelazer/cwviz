@@ -59,6 +59,11 @@ circuit_images:
       image: "adder.svg"
       width: 80
       height: 216
+    - type: "fullAdd_xc"
+      image_type: "svg"
+      image: "adder.svg"
+      width: 80
+      height: 160
     - type: "fullAdd_i"
       image_type: "svg"
       image: "adder.svg"

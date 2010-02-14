@@ -49,6 +49,10 @@ circuit_images:
       image_type: "TextRect"
       width: 80
       height: 216
+    - type: "fullAdd_xc"
+      image_type: "TextRect"
+      width: 80
+      height: 160
     - type: "fullAdd_i"
       image_type: "TextRect"
       width: 80
