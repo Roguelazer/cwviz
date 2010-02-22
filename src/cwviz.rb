@@ -145,7 +145,6 @@ end
 if (not scot_file.nil?)
     puts "Loading SCOT data" if ($verbose)
     s = Scot.new(scot_file)
-    puts "Normalizing to time of #{s.latest_time}" if ($verbose)
     s.annotate(mod, absolute_delay)
 end
 if (check_overlap)

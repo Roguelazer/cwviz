@@ -43,4 +43,8 @@ class Util
             return num
         end
     end
+    
+    def self.looks_like_number?(verilog)
+        return (!(@@normal_number.match(verilog).nil? and @@base_number.match(verilog).nil?))
+    end
 end

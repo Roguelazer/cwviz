@@ -17,6 +17,7 @@
 # along with CWVIZ.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'scot_parser.rb'
+require 'util.rb'
 
 # Turn a single spectrum in [0,1] into colors separated by warmth. 0 will be
 # blue, 1 will be red
@@ -55,9 +56,13 @@ class Scot
             latest_time = -1.0
             earliest_time = 1.0/0 # Infinity. Should be a builtin, but isn't.
             element.each_input { |arg|
+                if (Util.looks_like_number?(arg))
+                    # Don't bother looking for rise/fall times of numbers...
+                    next
+                end
                 if @sp.elements.has_key?(arg)
                     t = @sp.elements[arg]["Tlatest"]
-                    if (t < earliest_time)
+                if (t < earliest_time)
                         earliest_time = t
                     end
                 elsif (e = @sp.elements.find { |k,v|  v["orig_name"] == arg })
@@ -71,6 +76,10 @@ class Scot
                 end
             }
             element.each_output { |arg|
+                if (Util.looks_like_number?(arg))
+                    # Don't bother looking for rise/fall times of numbers...
+                    next
+                end
                 if @sp.elements.has_key?(arg)
                     t = @sp.elements[arg]["Tlatest"]
                     if (t > latest_time)
@@ -86,6 +95,9 @@ class Scot
                     next
                 end
             }
+            if (earliest_time  == (1.0/0))
+                earliest_time = latest_time
+            end
             element.props["Tout"] = latest_time
             element.props["Tin"] = earliest_time
             element.props["Tdelta"] = latest_time - earliest_time
@@ -101,6 +113,7 @@ class Scot
                 @latest_time = element.props["Tin"]
             end
         }
+        puts "Slowest time was #{@slowest_time}; latest time was #{@latest_time}" if $verbose
         # Actually annotate the opts
         circuit.each { |element|
             if absolute_delay
