@@ -124,5 +124,10 @@ class CircuitElement
         }
     end
 
+    # Convert the CircuitElement to a string
+    def to_s
+        "<CircuitElement #{@type} at (#{@x},#{@y}): #{@name}>"
+    end
+
     private :compute_argio
 end
