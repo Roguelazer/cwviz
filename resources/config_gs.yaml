@@ -1,0 +1,10 @@
+---
+circuit_images: []
+
+defaults:
+    image_type: "TextRect"
+    label: type
+    fill: "#cccccc"
+    scale_mode: none
+    width: 60
+...
