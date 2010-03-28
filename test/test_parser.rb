@@ -111,4 +111,9 @@ class TestParser < Test::Unit::TestCase
         assert_equal(0, csa1.x)
         assert_equal(10, csa1.y)
     end
+
+    def test_expr
+        parser = VlParser.new()
+        assert_nothing_raised { res = parser.parse_file(File.join($DATA_BASE, "expr.v")) }
+    end
 end

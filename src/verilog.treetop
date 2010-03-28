@@ -42,6 +42,10 @@ grammar Verilog
         name
     end
 
+    rule ptype
+        "input" / "output" / "inout"
+    end
+
     rule parameters
         '(' ws first_parameter:parameter ws rest_parameters:(',' ws param:parameter)* ws ')' {
             def value
@@ -53,7 +57,7 @@ grammar Verilog
     end
 
     rule parameter
-        ty:type ws si:size? ws na:name { 
+        ty:ptype ws si:size? ws na:name { 
             def type
                 return ty.text_value.to_sym
             end
@@ -75,7 +79,7 @@ grammar Verilog
             end
         } 
         /
-        ws na:name ws {
+        ws na:name {
             def type
                 return :unknown
                     y = x;
@@ -134,7 +138,7 @@ grammar Verilog
             end
         }
         /
-        "assign" ws name ws index? ws "=" ws name ws index? ";" {
+        "assign" ws expr ws "=" ws expr ws ";" {
             def statement_kind
                 return :assignment
             end
@@ -252,6 +256,46 @@ grammar Verilog
 
 
     rule expr
+        atom ws "&&" ws expr {
+            def type
+                return :land
+            end
+        }
+        /
+        atom ws "||" ws expr {
+            def type
+                return :lor
+            end
+        }
+        /
+        atom ws "&" ws expr {
+            def type
+                return :and
+            end
+        }
+        /
+        atom ws "|" ws expr {
+            def type
+                return :or
+            end
+        }
+        /
+        atom ws "^" ws expr {
+            def type
+                return :xor
+            end
+        }
+        /
+        "~" ws atom {
+            def type
+                return :not
+            end
+        }
+        /
+        atom
+    end
+
+    rule atom
         name ws idx:index? {
             def is_number?
                 false
@@ -286,10 +330,20 @@ grammar Verilog
                 self.text_value
             end
         }
+        /
+        "(" ws expr ws ")" {
+            def type
+                return :paren
+            end
+        }
     end
 
     rule ws
         (" " / "\n" / "\t")*
+    end
+
+    rule fws
+        (" " / "\n" / "\t")+
     end
 
     rule comment
