@@ -60,6 +60,7 @@ class CircuitElement
 
         @arguments = []
         @argio = nil
+        @argtypes = nil
         args.each { |a|
             @arguments.push(a.content)
         }
@@ -76,6 +77,16 @@ class CircuitElement
             compute_argio()
         end
         return @argio[n]
+    end
+
+    # Get the input/output status of an argument
+    #
+    # name
+    def argtype(name)
+        if (@argtypes.nil?)
+            compute_argio()
+        end
+        return @argtypes[name]
     end
 
     # Yields the argument to the block
@@ -100,11 +111,16 @@ class CircuitElement
 
     def compute_argio
         @argio = []
+        @argtypes = {}
         if @type_definition.nil?
             return
         end
         0.upto(@arguments.length) { |n|
-            @argio.push(@type_definition.param_type(n))
+            if (@arguments[n].kind_of?(Hash))
+                @argtypes[@arguments[n]["content"]] = @type_definition.param_type(@arguments[n]["name"])
+            else
+                @argio.push(@type_definition.param_type(n))
+            end
         }
     end
 

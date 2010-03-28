@@ -100,4 +100,13 @@ class TestCircuitModule < Test::Unit::TestCase
         assert_equal(:input, @third["a00"].argio(1))
         assert_equal(:output, @third["a00"].argio(2))
     end
+
+    def test_named_instance
+        named = @sc.module("named")
+        assert_not_nil(named)
+        assert_equal(1, named.num_elements)
+        inv1 = named["inv1"]
+        assert_equal("inv1", inv1.name)
+        assert_equal(:input, inv1.argtype("x"))
+    end
 end

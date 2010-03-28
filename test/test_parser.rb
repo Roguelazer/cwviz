@@ -57,8 +57,8 @@ class TestParser < Test::Unit::TestCase
         mod = res.modules[0]
         assert_equal("Hello", mod.module_name)
         assert_equal(2, mod.parameters.size)
-        assert_equal("input", mod.parameters[0].type)
-        assert_equal("output", mod.parameters[1].type)
+        assert_equal(:input, mod.parameters[0].type)
+        assert_equal(:output, mod.parameters[1].type)
         assert(!mod.parameters[0].array?)
         assert(mod.parameters[1].array?)
         assert_equal("[31:0]", mod.parameters[1].size)

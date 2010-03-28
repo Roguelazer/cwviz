@@ -18,7 +18,10 @@ module Verilog
     start_index = index
     if node_cache[:verilog].has_key?(index)
       cached = node_cache[:verilog][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -111,7 +114,10 @@ module Verilog
     start_index = index
     if node_cache[:vlmodule].has_key?(index)
       cached = node_cache[:vlmodule][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -206,7 +212,10 @@ module Verilog
     start_index = index
     if node_cache[:name].has_key?(index)
       cached = node_cache[:name][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -253,7 +262,10 @@ module Verilog
     start_index = index
     if node_cache[:type].has_key?(index)
       cached = node_cache[:type][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -309,7 +321,10 @@ module Verilog
     start_index = index
     if node_cache[:parameters].has_key?(index)
       cached = node_cache[:parameters][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -423,7 +438,7 @@ module Verilog
   module Parameter1
 
     def type
-        return ty.text_value
+        return ty.text_value.to_sym
     end
 
     def array?
@@ -460,6 +475,7 @@ module Verilog
   module Parameter3
     def type
         return :unknown
+            y = x;
     end
 
     def array?
@@ -479,7 +495,10 @@ module Verilog
     start_index = index
     if node_cache[:parameter].has_key?(index)
       cached = node_cache[:parameter][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -574,7 +593,10 @@ module Verilog
     start_index = index
     if node_cache[:size].has_key?(index)
       cached = node_cache[:size][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -697,7 +719,10 @@ module Verilog
     start_index = index
     if node_cache[:index].has_key?(index)
       cached = node_cache[:index][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -796,7 +821,10 @@ module Verilog
     start_index = index
     if node_cache[:content].has_key?(index)
       cached = node_cache[:content][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -1092,7 +1120,10 @@ module Verilog
     start_index = index
     if node_cache[:statement].has_key?(index)
       cached = node_cache[:statement][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -1488,83 +1519,320 @@ module Verilog
     end
   end
 
+  module Arguments3
+    def ws1
+      elements[1]
+    end
+
+    def ex
+      elements[2]
+    end
+
+    def ws2
+      elements[3]
+    end
+  end
+
+  module Arguments4
+    def ws1
+      elements[1]
+    end
+
+    def first
+      elements[2]
+    end
+
+    def ws2
+      elements[3]
+    end
+
+    def rest
+      elements[4]
+    end
+
+    def ws3
+      elements[5]
+    end
+
+  end
+
+  module Arguments5
+    def args
+        [first] + rest.elements.map do |f|
+            f.ex
+        end
+    end
+  end
+
   def _nt_arguments
     start_index = index
     if node_cache[:arguments].has_key?(index)
       cached = node_cache[:arguments][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0 = index
+    i1, s1 = index, []
+    if has_terminal?('(', false, index)
+      r2 = instantiate_node(SyntaxNode,input, index...(index + 1))
+      @index += 1
+    else
+      terminal_parse_failure('(')
+      r2 = nil
+    end
+    s1 << r2
+    if r2
+      r3 = _nt_ws
+      s1 << r3
+      if r3
+        r4 = _nt_expr
+        s1 << r4
+        if r4
+          r5 = _nt_ws
+          s1 << r5
+          if r5
+            s6, i6 = [], index
+            loop do
+              i7, s7 = index, []
+              if has_terminal?(',', false, index)
+                r8 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                @index += 1
+              else
+                terminal_parse_failure(',')
+                r8 = nil
+              end
+              s7 << r8
+              if r8
+                r9 = _nt_ws
+                s7 << r9
+                if r9
+                  r10 = _nt_expr
+                  s7 << r10
+                  if r10
+                    r11 = _nt_ws
+                    s7 << r11
+                  end
+                end
+              end
+              if s7.last
+                r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
+                r7.extend(Arguments0)
+              else
+                @index = i7
+                r7 = nil
+              end
+              if r7
+                s6 << r7
+              else
+                break
+              end
+            end
+            r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
+            s1 << r6
+            if r6
+              r12 = _nt_ws
+              s1 << r12
+              if r12
+                if has_terminal?(')', false, index)
+                  r13 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                  @index += 1
+                else
+                  terminal_parse_failure(')')
+                  r13 = nil
+                end
+                s1 << r13
+              end
+            end
+          end
+        end
+      end
+    end
+    if s1.last
+      r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
+      r1.extend(Arguments1)
+      r1.extend(Arguments2)
+    else
+      @index = i1
+      r1 = nil
+    end
+    if r1
+      r0 = r1
+    else
+      i14, s14 = index, []
+      if has_terminal?('(', false, index)
+        r15 = instantiate_node(SyntaxNode,input, index...(index + 1))
+        @index += 1
+      else
+        terminal_parse_failure('(')
+        r15 = nil
+      end
+      s14 << r15
+      if r15
+        r16 = _nt_ws
+        s14 << r16
+        if r16
+          r17 = _nt_mapexpr
+          s14 << r17
+          if r17
+            r18 = _nt_ws
+            s14 << r18
+            if r18
+              s19, i19 = [], index
+              loop do
+                i20, s20 = index, []
+                if has_terminal?(',', false, index)
+                  r21 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                  @index += 1
+                else
+                  terminal_parse_failure(',')
+                  r21 = nil
+                end
+                s20 << r21
+                if r21
+                  r22 = _nt_ws
+                  s20 << r22
+                  if r22
+                    r23 = _nt_mapexpr
+                    s20 << r23
+                    if r23
+                      r24 = _nt_ws
+                      s20 << r24
+                    end
+                  end
+                end
+                if s20.last
+                  r20 = instantiate_node(SyntaxNode,input, i20...index, s20)
+                  r20.extend(Arguments3)
+                else
+                  @index = i20
+                  r20 = nil
+                end
+                if r20
+                  s19 << r20
+                else
+                  break
+                end
+              end
+              r19 = instantiate_node(SyntaxNode,input, i19...index, s19)
+              s14 << r19
+              if r19
+                r25 = _nt_ws
+                s14 << r25
+                if r25
+                  if has_terminal?(')', false, index)
+                    r26 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                    @index += 1
+                  else
+                    terminal_parse_failure(')')
+                    r26 = nil
+                  end
+                  s14 << r26
+                end
+              end
+            end
+          end
+        end
+      end
+      if s14.last
+        r14 = instantiate_node(SyntaxNode,input, i14...index, s14)
+        r14.extend(Arguments4)
+        r14.extend(Arguments5)
+      else
+        @index = i14
+        r14 = nil
+      end
+      if r14
+        r0 = r14
+      else
+        @index = i0
+        r0 = nil
+      end
+    end
+
+    node_cache[:arguments][start_index] = r0
+
+    r0
+  end
+
+  module Mapexpr0
+    def name
+      elements[1]
+    end
+
+    def ws1
+      elements[3]
+    end
+
+    def expr
+      elements[4]
+    end
+
+    def ws2
+      elements[5]
+    end
+
+  end
+
+  module Mapexpr1
+    def content
+        return {"name"=>name.text_value, "content"=>expr.content}
+    end
+  end
+
+  def _nt_mapexpr
+    start_index = index
+    if node_cache[:mapexpr].has_key?(index)
+      cached = node_cache[:mapexpr][index]
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
     i0, s0 = index, []
-    if has_terminal?('(', false, index)
+    if has_terminal?('.', false, index)
       r1 = instantiate_node(SyntaxNode,input, index...(index + 1))
       @index += 1
     else
-      terminal_parse_failure('(')
+      terminal_parse_failure('.')
       r1 = nil
     end
     s0 << r1
     if r1
-      r2 = _nt_ws
+      r2 = _nt_name
       s0 << r2
       if r2
-        r3 = _nt_expr
+        if has_terminal?('(', false, index)
+          r3 = instantiate_node(SyntaxNode,input, index...(index + 1))
+          @index += 1
+        else
+          terminal_parse_failure('(')
+          r3 = nil
+        end
         s0 << r3
         if r3
           r4 = _nt_ws
           s0 << r4
           if r4
-            s5, i5 = [], index
-            loop do
-              i6, s6 = index, []
-              if has_terminal?(',', false, index)
-                r7 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                @index += 1
-              else
-                terminal_parse_failure(',')
-                r7 = nil
-              end
-              s6 << r7
-              if r7
-                r8 = _nt_ws
-                s6 << r8
-                if r8
-                  r9 = _nt_expr
-                  s6 << r9
-                  if r9
-                    r10 = _nt_ws
-                    s6 << r10
-                  end
-                end
-              end
-              if s6.last
-                r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
-                r6.extend(Arguments0)
-              else
-                @index = i6
-                r6 = nil
-              end
-              if r6
-                s5 << r6
-              else
-                break
-              end
-            end
-            r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
+            r5 = _nt_expr
             s0 << r5
             if r5
-              r11 = _nt_ws
-              s0 << r11
-              if r11
+              r6 = _nt_ws
+              s0 << r6
+              if r6
                 if has_terminal?(')', false, index)
-                  r12 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                  r7 = instantiate_node(SyntaxNode,input, index...(index + 1))
                   @index += 1
                 else
                   terminal_parse_failure(')')
-                  r12 = nil
+                  r7 = nil
                 end
-                s0 << r12
+                s0 << r7
               end
             end
           end
@@ -1573,14 +1841,14 @@ module Verilog
     end
     if s0.last
       r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(Arguments1)
-      r0.extend(Arguments2)
+      r0.extend(Mapexpr0)
+      r0.extend(Mapexpr1)
     else
       @index = i0
       r0 = nil
     end
 
-    node_cache[:arguments][start_index] = r0
+    node_cache[:mapexpr][start_index] = r0
 
     r0
   end
@@ -1641,7 +1909,10 @@ module Verilog
     start_index = index
     if node_cache[:expr].has_key?(index)
       cached = node_cache[:expr][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -1772,7 +2043,10 @@ module Verilog
     start_index = index
     if node_cache[:ws].has_key?(index)
       cached = node_cache[:ws][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 
@@ -1834,7 +2108,10 @@ module Verilog
     start_index = index
     if node_cache[:comment].has_key?(index)
       cached = node_cache[:comment][index]
-      @index = cached.interval.end if cached
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
       return cached
     end
 

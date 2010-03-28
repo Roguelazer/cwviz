@@ -33,3 +33,13 @@ module and2(x0, x1, y);
     input x1;
     output y;
 endmodule
+
+module named;
+    wire x;
+    wire y;
+    inverter inv1(.X(x), .Y(y));
+endmodule
+
+module inverter(input X, output Y);
+    assign Y = X;
+endmodule

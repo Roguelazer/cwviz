@@ -55,7 +55,7 @@ grammar Verilog
     rule parameter
         ty:type ws si:size? ws na:name { 
             def type
-                return ty.text_value
+                return ty.text_value.to_sym
             end
 
             def array?
@@ -78,6 +78,7 @@ grammar Verilog
         ws na:name ws {
             def type
                 return :unknown
+                    y = x;
             end
 
             def array?
@@ -231,7 +232,24 @@ grammar Verilog
                 end
             end
         }
+        /
+        '(' ws first:mapexpr ws rest:(',' ws ex:mapexpr ws)* ws ')' {
+            def args
+                [first] + rest.elements.map do |f|
+                    f.ex
+                end
+            end
+        }
     end
+
+    rule mapexpr
+        '.' name '(' ws expr ws ')' {
+            def content
+                return {"name"=>name.text_value, "content"=>expr.content}
+            end
+        }
+    end
+
 
     rule expr
         name ws idx:index? {
