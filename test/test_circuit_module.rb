@@ -36,6 +36,10 @@ class TestCircuitModule < Test::Unit::TestCase
         assert_equal([], @first.outputs)
         assert_equal(['y'], @second.inputs)
         assert_equal(['z'], @second.outputs)
+        assert_equal(:input, @first.param_type('x'))
+        assert_equal(:input, @first.param_type(0))
+        assert_equal(:input, @second.param_type('y'))
+        assert_equal(:output, @second.param_type('z'))
     end
 
     def test_positional_io

@@ -54,20 +54,27 @@ class CircuitModule
     # Determine whether the nth parameter is an input or an output
     #
     # Arguments:
-    # n:: The index of the parameter. 0-based.
+    # n:: The index of the parameter, 0-based, or the string name of the
+    #     parameter
     #
     # Returns:
     # :input if it's an input
     # :output if it's an output
     # :unknown if it's unknown or out of range
     def param_type(n)
-        if (n < 0 or n >= @param_array.length )
-            return :unknown
+        if (n.kind_of?(Numeric))
+            if (n < 0 or n >= @param_array.length )
+                return :unknown
+            else
+                return @param_types[@param_array[n]]
+            end
+        elsif (n.kind_of?(String))
+            return @param_types[n]
         else
-            return @param_types[@param_array[n]]
+            raise ArgumentError.new("n must be a String or a Numeric")
         end
     end
-
+    
     # Get all of the input names
     def inputs
         inputs = []
