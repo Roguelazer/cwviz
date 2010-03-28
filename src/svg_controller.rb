@@ -97,6 +97,8 @@ class SVGController
                 SVG::Image.new(x, y, @width, @height, @file_name, options)
             when "textrect"
                 SVG::Rect.new(x, y, @width, @height, options)
+            else
+                SVG::Rect.new(x, y, @width, @height, options)
             end
             return obj
         end
