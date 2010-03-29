@@ -47,7 +47,7 @@ grammar Verilog
     end
 
     rule parameters
-        '(' ws first_parameter:parameter ws rest_parameters:(',' ws param:parameter)* ws ')' {
+        '(' ws first_parameter:parameter ws rest_parameters:(ws ',' ws param:parameter)* ws ')' {
             def value
                 return ([first_parameter] + rest_parameters.elements.map { |param_field|
                     param_field.param

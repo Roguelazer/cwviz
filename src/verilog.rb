@@ -169,35 +169,17 @@ module Verilog
                       r11 = _nt_ws
                       s0 << r11
                       if r11
-                        i12 = index
-                        if has_terminal?('endmodule;', false, index)
-                          r13 = instantiate_node(SyntaxNode,input, index...(index + 10))
-                          @index += 10
+                        if has_terminal?('endmodule', false, index)
+                          r12 = instantiate_node(SyntaxNode,input, index...(index + 9))
+                          @index += 9
                         else
-                          terminal_parse_failure('endmodule;')
-                          r13 = nil
-                        end
-                        if r13
-                          r12 = r13
-                        else
-                          if has_terminal?('endmodule', false, index)
-                            r14 = instantiate_node(SyntaxNode,input, index...(index + 9))
-                            @index += 9
-                          else
-                            terminal_parse_failure('endmodule')
-                            r14 = nil
-                          end
-                          if r14
-                            r12 = r14
-                          else
-                            @index = i12
-                            r12 = nil
-                          end
+                          terminal_parse_failure('endmodule')
+                          r12 = nil
                         end
                         s0 << r12
                         if r12
-                          r15 = _nt_ws
-                          s0 << r15
+                          r13 = _nt_ws
+                          s0 << r13
                         end
                       end
                     end
@@ -348,12 +330,16 @@ module Verilog
   end
 
   module Parameters0
-    def ws
-      elements[1]
+    def ws1
+      elements[0]
+    end
+
+    def ws2
+      elements[2]
     end
 
     def param
-      elements[2]
+      elements[3]
     end
   end
 
@@ -421,20 +407,24 @@ module Verilog
             s5, i5 = [], index
             loop do
               i6, s6 = index, []
-              if has_terminal?(',', false, index)
-                r7 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                @index += 1
-              else
-                terminal_parse_failure(',')
-                r7 = nil
-              end
+              r7 = _nt_ws
               s6 << r7
               if r7
-                r8 = _nt_ws
+                if has_terminal?(',', false, index)
+                  r8 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                  @index += 1
+                else
+                  terminal_parse_failure(',')
+                  r8 = nil
+                end
                 s6 << r8
                 if r8
-                  r9 = _nt_parameter
+                  r9 = _nt_ws
                   s6 << r9
+                  if r9
+                    r10 = _nt_parameter
+                    s6 << r10
+                  end
                 end
               end
               if s6.last
@@ -453,17 +443,17 @@ module Verilog
             r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
             s0 << r5
             if r5
-              r10 = _nt_ws
-              s0 << r10
-              if r10
+              r11 = _nt_ws
+              s0 << r11
+              if r11
                 if has_terminal?(')', false, index)
-                  r11 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                  r12 = instantiate_node(SyntaxNode,input, index...(index + 1))
                   @index += 1
                 else
                   terminal_parse_failure(')')
-                  r11 = nil
+                  r12 = nil
                 end
-                s0 << r11
+                s0 << r12
               end
             end
           end
