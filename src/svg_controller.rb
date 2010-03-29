@@ -33,6 +33,7 @@ class SVGController
         attr_reader :file_name
         attr_accessor :width
         attr_accessor :height
+        attr_accessor :type
 
         # Initialize this CircuitImage
         #
@@ -124,6 +125,7 @@ class SVGController
                     imobj = @circuit_images["default"].clone
                     imobj.file_type = type
                     imobj.height = height
+                    imobj.type = type
                     @circuit_images[type] = imobj
                 end
             }
@@ -144,7 +146,7 @@ class SVGController
         # If no default was provided, just draw an 80x80 Rect
         if not @circuit_images.has_key?("default")
             real_defaults = {
-                "image_type" => "TextRect",
+                "image_type" => "textrect",
                 "image" => "",
                 "width" => 80,
                 "height" => 80,
