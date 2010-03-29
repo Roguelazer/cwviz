@@ -339,11 +339,11 @@ grammar Verilog
     end
 
     rule ws
-        (" " / "\n" / "\t")*
+        (" " / "\n" / "\t" / "\r")*
     end
 
     rule fws
-        (" " / "\n" / "\t")+
+        (" " / "\n" / "\t" / "\r")+
     end
 
     rule comment

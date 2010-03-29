@@ -2549,8 +2549,19 @@ module Verilog
           if r4
             r1 = r4
           else
-            @index = i1
-            r1 = nil
+            if has_terminal?("\r", false, index)
+              r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure("\r")
+              r5 = nil
+            end
+            if r5
+              r1 = r5
+            else
+              @index = i1
+              r1 = nil
+            end
           end
         end
       end
@@ -2611,8 +2622,19 @@ module Verilog
           if r4
             r1 = r4
           else
-            @index = i1
-            r1 = nil
+            if has_terminal?("\r", false, index)
+              r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure("\r")
+              r5 = nil
+            end
+            if r5
+              r1 = r5
+            else
+              @index = i1
+              r1 = nil
+            end
           end
         end
       end
