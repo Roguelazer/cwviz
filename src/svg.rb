@@ -192,6 +192,8 @@ class SVG
         attr_reader :x, :y, :width, :height
         attr_reader :source
 
+        @@parsed = Hash.new
+
         def initialize(x, y, width, height, source, options={})
             @x = x
             @y = y
@@ -206,15 +208,22 @@ class SVG
         end
 
         def get_xml
-            e = XML::Node.new("image")
+            if (not @@parsed.has_key?(@source))
+                parser = XML::Parser.file(@source)
+                d = parser.parse
+                @@parsed[@source] = d.root
+            end
+            e = @@parsed[@source].copy(true)
             e["x"] = @x.to_s
             e["y"] = @y.to_s
-            e["preserveAspectRatio"] = @preserve_aspect_ratio ? "xMidYMid" : "None"
-            #e["viewBox"] = "0 0 #{@width} #{@height}"
+            e["preserveAspectRatio"] = @preserve_aspect_ratio ? "xMidYMid" : "none"
+            newwidth = e["width"]
+            newheight = e["height"]
+            e["viewBox"] = "0 0 #{newwidth} #{newheight}"
             e["width"] = @width.to_s
             e["height"] = @height.to_s
-            e["xlink:href"] = File.expand_path(@source.to_s)
             e["style"] = get_style()
+            e["id"] = IDGenerator.next_with_prefix("inner_image")
             return e
         end
     end

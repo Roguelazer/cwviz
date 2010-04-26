@@ -15,6 +15,6 @@
     <path
        d="M 2.8571429,3.7907531 L 128.57143,3.7907531 C 128.57143,3.7907531 138.20479,100.58596 112.14286,126.64789 C 85.474831,153.31592 48.096599,153.31592 21.428571,126.64789 C -4.6333632,100.58596 2.8571429,3.7907531 2.8571429,3.7907531 z"
        id="rect3800"
-       style="fill:#cccccc;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:3.00029993;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1" />
+       style="fill:inherit;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:3.00029993;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1" />
   </g>
 </svg>
