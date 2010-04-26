@@ -112,12 +112,14 @@ class SVG
             e["height"] = @height.to_s
             e["text-anchor"] = "middle"
             e["alignment-baseline"] = "central"
+            e["style"] = "fill:black;fill-opacity:1;stroke:0"
             e << text
             child = node
             child["x"] = "0"
             child["y"] = "0"
             group << child
             group << e
+            group["style"] = get_style()
             return group
         end
 
@@ -222,7 +224,6 @@ class SVG
             e["viewBox"] = "0 0 #{newwidth} #{newheight}"
             e["width"] = @width.to_s
             e["height"] = @height.to_s
-            e["style"] = get_style()
             e["id"] = IDGenerator.next_with_prefix("inner_image")
             return e
         end
